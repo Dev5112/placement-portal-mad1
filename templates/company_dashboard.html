@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Company Dashboard | Placement Portal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4">Company Dashboard</h2>
+
+    <!-- ================= Company Profile ================= -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ company.company_name }}</h5>
+
+            <p class="card-text">
+                <strong>Company ID:</strong> {{ company.id }} <br>
+                <strong>HR Contact:</strong> {{ company.hr_contact }} <br>
+                <strong>Website:</strong>
+                <a href="{{ company.website }}" target="_blank">
+                    {{ company.website }}
+                </a><br>
+                <strong>Status:</strong>
+                {% if company.approval_status == "APPROVED" %}
+                    <span class="badge bg-success">Approved</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark">
+                        Pending Admin Approval
+                    </span>
+                {% endif %}
+            </p>
+
+            {% if company.approval_status == "APPROVED" %}
+                <a href="{{ url_for('main.create_drive') }}"
+                   class="btn btn-primary">
+                    Create Placement Drive
+                </a>
+            {% else %}
+                <p class="text-danger mt-2">
+                    You can create placement drives only after admin approval.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ================= Placement Drives ================= -->
+    <h4 class="mt-4">Your Placement Drives</h4>
+
+    {% if drives %}
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+        <tr>
+            <th>Job Title</th>
+            <th>Skills</th>
+            <th>Experience</th>
+            <th>Salary Range</th>
+            <th>Status</th>
+            <th>Applications</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for drive in drives %}
+        <tr>
+            <td>{{ drive.job_title }}</td>
+            <td>{{ drive.required_skills }}</td>
+            <td>{{ drive.experience_required }} years</td>
+            <td>{{ drive.salary_range }}</td>
+            <td>
+                {% if drive.status == "ACTIVE" %}
+                    <span class="badge bg-success">Active</span>
+                {% else %}
+                    <span class="badge bg-secondary">Closed</span>
+                {% endif %}
+            </td>
+            <td>
+                {{ drive.applications|length }}
+            </td>
+            <td>
+                {% if drive.status == "ACTIVE" %}
+                    <a href="{{ url_for('main.close_drive', id=drive.id) }}"
+                       class="btn btn-sm btn-warning">
+                        Close
+                    </a>
+                {% endif %}
+                <a href="{{ url_for('main.view_applications', id=drive.id) }}"
+                   class="btn btn-sm btn-info">
+                    View Applications
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No placement drives created yet.</p>
+    {% endif %}
+
+</div>
+{% endblock %}

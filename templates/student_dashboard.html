@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard | Placement Portal{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Student Dashboard</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Company</th>
+            <th>Job Title</th>
+            <th>Deadline</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for drive in drives %}
+        <tr>
+            <td>{{ drive.company.company_name }}</td>
+            <td>{{ drive.job_title }}</td>
+            <td>{{ drive.application_deadline }}</td>
+
+            {% set applied = false %}
+            {% for app in drive.applications %}
+                {% if app.student_id == session["user_id"] %}
+                    {% set applied = true %}
+                    <td>{{ app.status }}</td>
+                {% endif %}
+            {% endfor %}
+
+            {% if not applied %}
+                <td>Not Applied</td>
+                <td>
+                    <a href="{{ url_for('apply_drive', drive_id=drive.id) }}"
+                       class="btn btn-sm btn-primary">
+                        Apply
+                    </a>
+                </td>
+            {% else %}
+                <td>
+                    <span class="badge bg-secondary">Applied</span>
+                </td>
+                <td>—</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

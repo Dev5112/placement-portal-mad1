@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard | Placement Portal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <!-- ================= Dashboard Statistics ================= -->
+    <div class="row text-center mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5>Total Students</h5>
+                    <h3>{{ stats.total_students }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5>Total Companies</h5>
+                    <h3>{{ stats.total_companies }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <h5>Placement Drives</h5>
+                    <h3>{{ stats.total_drives }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <h5>Applications</h5>
+                    <h3>{{ stats.total_applications }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= Company Management ================= -->
+    <h4 class="mt-5">Company Registrations</h4>
+
+    <form method="get" class="mb-3">
+        <input type="text" name="company_search" class="form-control"
+               placeholder="Search company by name">
+    </form>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+        <tr>
+            <th>Company Name</th>
+            <th>HR Contact</th>
+            <th>Approval Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for company in companies %}
+        <tr>
+            <td>{{ company.company_name }}</td>
+            <td>{{ company.hr_contact }}</td>
+            <td>{{ company.approval_status }}</td>
+            <td>
+                {% if company.approval_status == "PENDING" %}
+                    <a href="{{ url_for('main.approve_company', id=company.id) }}"
+                       class="btn btn-sm btn-success">Approve</a>
+                    <a href="{{ url_for('main.reject_company', id=company.id) }}"
+                       class="btn btn-sm btn-danger">Reject</a>
+                {% endif %}
+
+                {% if company.is_blacklisted %}
+                    <span class="badge bg-secondary">Blacklisted</span>
+                {% else %}
+                    <a href="{{ url_for('main.blacklist_company', id=company.id) }}"
+                       class="btn btn-sm btn-warning">Blacklist</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- ================= Placement Drives ================= -->
+    <h4 class="mt-5">Placement Drives</h4>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+        <tr>
+            <th>Company</th>
+            <th>Job Title</th>
+            <th>Deadline</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for drive in drives %}
+        <tr>
+            <td>{{ drive.company.company_name }}</td>
+            <td>{{ drive.job_title }}</td>
+            <td>{{ drive.application_deadline }}</td>
+            <td>{{ drive.status }}</td>
+            <td>
+                {% if drive.status == "PENDING" %}
+                    <a href="{{ url_for('main.approve_drive', id=drive.id) }}"
+                       class="btn btn-sm btn-success">Approve</a>
+                    <a href="{{ url_for('main.reject_drive', id=drive.id) }}"
+                       class="btn btn-sm btn-danger">Reject</a>
+                {% else %}
+                    <span class="badge bg-success">Approved</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- ================= Student Management ================= -->
+    <h4 class="mt-5">Registered Students</h4>
+
+    <form method="get" class="mb-3">
+        <input type="text" name="student_search" class="form-control"
+               placeholder="Search student by name or ID">
+    </form>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.full_name }}</td>
+            <td>{{ student.email }}</td>
+            <td>
+                {% if student.is_active %}
+                    Active
+                {% else %}
+                    Blacklisted
+                {% endif %}
+            </td>
+            <td>
+                {% if student.is_active %}
+                    <a href="{{ url_for('main.blacklist_student', id=student.id) }}"
+                       class="btn btn-sm btn-warning">Blacklist</a>
+                {% else %}
+                    <span class="badge bg-secondary">Deactivated</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- ================= Applications ================= -->
+    <h4 class="mt-5">Job Applications</h4>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+        <tr>
+            <th>Student</th>
+            <th>Company</th>
+            <th>Job Title</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for app in applications %}
+        <tr>
+            <td>{{ app.student.full_name }}</td>
+            <td>{{ app.placement_drive.company.company_name }}</td>
+            <td>{{ app.placement_drive.job_title }}</td>
+            <td>{{ app.status }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

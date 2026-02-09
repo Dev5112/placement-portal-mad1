@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Application History | Placement Portal{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">My Application History</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Company</th>
+            <th>Job Title</th>
+            <th>Applied On</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for application in applications %}
+        <tr>
+            <td>{{ application.placement_drive.company.company_name }}</td>
+            <td>{{ application.placement_drive.job_title }}</td>
+            <td>{{ application.application_date.strftime('%d-%m-%Y') }}</td>
+            <td>
+                {% if application.status == "APPLIED" %}
+                    <span class="badge bg-secondary">Applied</span>
+                {% elif application.status == "SHORTLISTED" %}
+                    <span class="badge bg-warning text-dark">Shortlisted</span>
+                {% elif application.status == "SELECTED" %}
+                    <span class="badge bg-success">Selected</span>
+                {% elif application.status == "REJECTED" %}
+                    <span class="badge bg-danger">Rejected</span>
+                {% elif application.status == "PLACED" %}
+                    <span class="badge bg-primary">Placed</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('student_dashboard') }}" class="btn btn-outline-primary mt-3">
+    Back to Dashboard
+</a>
+{% endblock %}
