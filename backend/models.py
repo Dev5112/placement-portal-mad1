@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy  # type: ignore[import]
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 db = SQLAlchemy()
@@ -20,7 +20,6 @@ class User(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Relationships
     company_profile = db.relationship(
         "CompanyProfile", backref="user", uselist=False, cascade="all, delete"
     )
@@ -31,6 +30,9 @@ class User(db.Model):
     applications = db.relationship(
         "Application", backref="student", cascade="all, delete", lazy=True
     )
+
+    def __repr__(self):
+        return f"<User {self.email} ({self.role})>"
 
 
 # -----------------------------
@@ -50,11 +52,16 @@ class CompanyProfile(db.Model):
 
     is_blacklisted = db.Column(db.Boolean, default=False)
 
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user_id = db.Column(
+        db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False
+    )
 
     placement_drives = db.relationship(
         "PlacementDrive", backref="company", cascade="all, delete", lazy=True
     )
+
+    def __repr__(self):
+        return f"<Company {self.company_name}>"
 
 
 # -----------------------------
@@ -70,7 +77,12 @@ class StudentProfile(db.Model):
 
     is_blacklisted = db.Column(db.Boolean, default=False)
 
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user_id = db.Column(
+        db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False
+    )
+
+    def __repr__(self):
+        return f"<StudentProfile user_id={self.user_id}>"
 
 
 # -----------------------------
@@ -83,6 +95,11 @@ class PlacementDrive(db.Model):
     job_title = db.Column(db.String(150), nullable=False)
     job_description = db.Column(db.Text, nullable=False)
     eligibility_criteria = db.Column(db.Text)
+
+    required_skills = db.Column(db.String(250))
+    experience_required = db.Column(db.Integer)
+    salary_range = db.Column(db.String(100))
+
     application_deadline = db.Column(db.Date, nullable=False)
 
     status = db.Column(
@@ -92,12 +109,15 @@ class PlacementDrive(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     company_id = db.Column(
-        db.Integer, db.ForeignKey("company_profile.id"), nullable=False
+        db.Integer, db.ForeignKey("company_profile.id", ondelete="CASCADE"), nullable=False
     )
 
     applications = db.relationship(
         "Application", backref="placement_drive", cascade="all, delete", lazy=True
     )
+
+    def __repr__(self):
+        return f"<Drive {self.job_title} ({self.status})>"
 
 
 # -----------------------------
@@ -113,10 +133,16 @@ class Application(db.Model):
         db.String(20), default="APPLIED"
     )  # APPLIED / SHORTLISTED / SELECTED / REJECTED / PLACED
 
-    student_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    drive_id = db.Column(db.Integer, db.ForeignKey("placement_drive.id"), nullable=False)
+    student_id = db.Column(
+        db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False
+    )
+    drive_id = db.Column(
+        db.Integer, db.ForeignKey("placement_drive.id", ondelete="CASCADE"), nullable=False
+    )
 
-    # Prevent duplicate applications
     __table_args__ = (
         db.UniqueConstraint("student_id", "drive_id", name="unique_application"),
     )
+
+    def __repr__(self):
+        return f"<Application student={self.student_id} drive={self.drive_id}>"

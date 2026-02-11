@@ -3,46 +3,91 @@
 {% block title %}Student Registration | Placement Portal{% endblock %}
 
 {% block content %}
+
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow">
+            
             <div class="card-header bg-success text-white text-center">
                 <h4>Student Registration</h4>
             </div>
 
             <div class="card-body">
-                <form method="POST">
+
+                <form method="POST" enctype="multipart/form-data">
+
+                    <!-- Full Name -->
                     <div class="mb-3">
                         <label class="form-label">Full Name</label>
-                        <input type="text" name="name" class="form-control" required>
+                        <input type="text"
+                               name="name"
+                               class="form-control"
+                               placeholder="Enter your full name"
+                               required>
                     </div>
 
+                    <!-- Email -->
                     <div class="mb-3">
                         <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" required>
+                        <input type="email"
+                               name="email"
+                               class="form-control"
+                               placeholder="Enter your email"
+                               required>
                     </div>
 
+                    <!-- Password -->
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" required>
+                        <input type="password"
+                               name="password"
+                               class="form-control"
+                               placeholder="Enter password"
+                               required>
                     </div>
 
+                    <!-- Qualification -->
                     <div class="mb-3">
                         <label class="form-label">Qualification</label>
-                        <input type="text" name="qualification" class="form-control" required>
+                        <input type="text"
+                               name="qualification"
+                               class="form-control"
+                               placeholder="e.g. B.Tech CSE"
+                               required>
                     </div>
 
+                    <!-- Skills -->
                     <div class="mb-3">
                         <label class="form-label">Skills</label>
-                        <textarea name="skills" class="form-control" rows="3"></textarea>
+                        <textarea name="skills"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="e.g. Python, SQL, Machine Learning"></textarea>
                     </div>
 
+                    <!-- Resume Upload -->
+                    <div class="mb-3">
+                        <label class="form-label">Upload Resume</label>
+                        <input type="file"
+                               name="resume"
+                               class="form-control"
+                               accept=".pdf,.doc,.docx"
+                               required>
+                        <small class="text-muted">
+                            Accepted formats: PDF, DOC, DOCX
+                        </small>
+                    </div>
+
+                    <!-- Submit Button -->
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit"
+                                class="btn btn-primary">
                             Register
                         </button>
                     </div>
+
                 </form>
+
             </div>
 
             <div class="card-footer text-center">
@@ -51,7 +96,9 @@
                     <a href="{{ url_for('main.login') }}">Login</a>
                 </small>
             </div>
+
         </div>
     </div>
 </div>
+
 {% endblock %}

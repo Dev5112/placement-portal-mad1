@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Applications | Placement Portal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h3 class="mb-3">
+        Applications for: <span class="text-primary">{{ drive.job_title }}</span>
+    </h3>
+
+    {% if applications %}
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+        <tr>
+            <th>Student Name</th>
+            <th>Email</th>
+            <th>Applied On</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for app in applications %}
+        <tr>
+            <td>{{ app.student.full_name }}</td>
+            <td>{{ app.student.email }}</td>
+            <td>{{ app.application_date.strftime('%d-%m-%Y') }}</td>
+            <td>
+                {% if app.status == "APPLIED" %}
+                    <span class="badge bg-secondary">Applied</span>
+                {% elif app.status == "SHORTLISTED" %}
+                    <span class="badge bg-warning text-dark">Shortlisted</span>
+                {% elif app.status == "SELECTED" %}
+                    <span class="badge bg-success">Selected</span>
+                {% elif app.status == "REJECTED" %}
+                    <span class="badge bg-danger">Rejected</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('main.view_application', id=app.id) }}"
+                   class="btn btn-sm btn-primary">
+                    Review Application
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No students have applied yet.</p>
+    {% endif %}
+
+    <a href="{{ url_for('main.company_dashboard') }}"
+       class="btn btn-secondary mt-3">
+        Back to Dashboard
+    </a>
+
+</div>
+{% endblock %}

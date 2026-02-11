@@ -5,6 +5,12 @@
 {% block content %}
 <h2 class="mb-4">Student Dashboard</h2>
 
+<form method="GET" class="mb-3">
+    <input type="text" name="search"
+           class="form-control"
+           placeholder="Search by company, job title, or skills">
+</form>
+
 <table class="table table-bordered table-striped">
     <thead class="table-dark">
         <tr>
@@ -34,7 +40,7 @@
             {% if not applied %}
                 <td>Not Applied</td>
                 <td>
-                    <a href="{{ url_for('apply_drive', drive_id=drive.id) }}"
+                    <a href="{{ url_for('main.apply_drive', drive_id=drive.id) }}"
                        class="btn btn-sm btn-primary">
                         Apply
                     </a>

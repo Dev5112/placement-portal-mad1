@@ -50,16 +50,19 @@ def logout():
 
 
 # =========================================================
-# STUDENT REGISTRATION
+# STUDENT REGISTRATION (WITH RESUME UPLOAD)
 # =========================================================
 @bp.route("/student/register", methods=["GET", "POST"])
 def student_register():
+
     if request.method == "POST":
 
+        # ================= Check duplicate email =================
         if User.query.filter_by(email=request.form["email"]).first():
             flash("Email already exists", "warning")
             return redirect(url_for("main.student_register"))
 
+        # ================= Create User =================
         user = User(
             full_name=request.form["name"],
             email=request.form["email"],
@@ -69,23 +72,45 @@ def student_register():
             ),
             role="STUDENT"
         )
-
         db.session.add(user)
         db.session.commit()
 
+        # ================= Handle Resume Upload =================
+        resume = request.files.get("resume")
+        resume_path = None
+
+        if resume and resume.filename != "":
+
+            # Create folder if not exists
+            upload_folder = os.path.join("static", "resumes")
+            os.makedirs(upload_folder, exist_ok=True)
+
+            # Secure filename
+            from werkzeug.utils import secure_filename
+            filename = secure_filename(resume.filename)
+
+            # Save file
+            filepath = os.path.join(upload_folder, filename)
+            resume.save(filepath)
+
+            # Store relative path in DB
+            resume_path = f"resumes/{filename}"
+
+        # ================= Create Student Profile =================
         profile = StudentProfile(
             qualification=request.form["qualification"],
             skills=request.form["skills"],
+            resume_path=resume_path,
             user_id=user.id
         )
 
         db.session.add(profile)
         db.session.commit()
 
+        flash("Student registered successfully", "success")
         return redirect(url_for("main.login"))
 
     return render_template("student_register.html")
-
 
 # =========================================================
 # COMPANY REGISTRATION
@@ -107,7 +132,6 @@ def company_register():
             ),
             role="COMPANY"
         )
-
         db.session.add(user)
         db.session.commit()
 
@@ -117,7 +141,6 @@ def company_register():
             website=request.form["website"],
             user_id=user.id
         )
-
         db.session.add(company)
         db.session.commit()
 
@@ -128,15 +151,14 @@ def company_register():
 
 
 # =========================================================
-# ADMIN ROUTES
+# ADMIN DASHBOARD
 # =========================================================
 @bp.route("/admin")
 def admin_dashboard():
-
     if session.get("role") != "ADMIN":
         return redirect(url_for("main.login"))
 
-    # ---------- Dashboard Statistics ----------
+    # ================= Stats =================
     stats = {
         "total_students": User.query.filter_by(role="STUDENT").count(),
         "total_companies": CompanyProfile.query.count(),
@@ -144,28 +166,29 @@ def admin_dashboard():
         "total_applications": Application.query.count()
     }
 
-    # ---------- Search Parameters ----------
-    company_search = request.args.get("company_search", "")
-    student_search = request.args.get("student_search", "")
+    # ================= Search inputs =================
+    company_search = request.args.get("company_search", "").strip()
+    student_search = request.args.get("student_search", "").strip()
 
-    # ---------- Company Search ----------
-    companies_query = CompanyProfile.query
+    # ================= Company Search =================
+    companies = CompanyProfile.query
     if company_search:
-        companies_query = companies_query.filter(
+        companies = companies.filter(
             CompanyProfile.company_name.ilike(f"%{company_search}%")
         )
-    companies = companies_query.all()
+    companies = companies.all()
 
-    # ---------- Student Search ----------
-    students_query = User.query.filter_by(role="STUDENT")
+    # ================= Student Search =================
+    students = User.query.filter_by(role="STUDENT")
     if student_search:
-        students_query = students_query.filter(
+        students = students.filter(
             (User.full_name.ilike(f"%{student_search}%")) |
             (User.email.ilike(f"%{student_search}%")) |
-            (User.id.ilike(f"%{student_search}%"))
+            (User.id.cast(db.String).ilike(f"%{student_search}%"))
         )
-    students = students_query.all()
+    students = students.all()
 
+    # ================= Other Data =================
     drives = PlacementDrive.query.all()
     applications = Application.query.all()
 
@@ -181,114 +204,125 @@ def admin_dashboard():
 
 @bp.route("/admin/company/<int:id>/approve")
 def approve_company(id):
-
     if session.get("role") != "ADMIN":
         return redirect(url_for("main.login"))
 
     company = CompanyProfile.query.get_or_404(id)
     company.approval_status = "APPROVED"
-
     db.session.commit()
+
+    flash("Company approved", "success")
     return redirect(url_for("main.admin_dashboard"))
 
 
 @bp.route("/admin/drive/<int:id>/approve")
 def approve_drive(id):
-
     if session.get("role") != "ADMIN":
         return redirect(url_for("main.login"))
 
     drive = PlacementDrive.query.get_or_404(id)
     drive.status = "APPROVED"
-
     db.session.commit()
+
+    flash("Drive approved", "success")
     return redirect(url_for("main.admin_dashboard"))
 
+@bp.route("/admin/student/<int:id>/blacklist")
+def blacklist_student(id):
+    if session.get("role") != "ADMIN":
+        return redirect(url_for("main.login"))
 
-# =========================================================
-# ADMIN ACTIONS (Reject / Blacklist)
-# =========================================================
+    student_user = User.query.get_or_404(id)
+
+    # Disable student login
+    student_user.is_active = False
+
+    # Optional: mark profile blacklist (if you want tracking)
+    student_profile = StudentProfile.query.filter_by(user_id=id).first()
+    if student_profile:
+        student_profile.is_blacklisted = True
+
+    db.session.commit()
+
+    flash("Student blacklisted successfully", "danger")
+    return redirect(url_for("main.admin_dashboard"))
 
 @bp.route("/admin/company/<int:id>/reject")
 def reject_company(id):
-
     if session.get("role") != "ADMIN":
         return redirect(url_for("main.login"))
 
     company = CompanyProfile.query.get_or_404(id)
     company.approval_status = "REJECTED"
-
     db.session.commit()
+
     flash("Company rejected", "warning")
     return redirect(url_for("main.admin_dashboard"))
 
 @bp.route("/admin/company/<int:id>/blacklist")
 def blacklist_company(id):
-
     if session.get("role") != "ADMIN":
         return redirect(url_for("main.login"))
 
     company = CompanyProfile.query.get_or_404(id)
-    company.is_blacklisted = True  
+    company.is_blacklisted = True
 
     user = User.query.get(company.user_id)
     if user:
-        user.is_active = False      
+        user.is_active = False
 
     db.session.commit()
-    flash("Company blacklisted", "danger")
+    flash("Company blacklisted successfully", "danger")
+
     return redirect(url_for("main.admin_dashboard"))
 
 
 @bp.route("/admin/drive/<int:id>/reject")
 def reject_drive(id):
-
     if session.get("role") != "ADMIN":
         return redirect(url_for("main.login"))
 
     drive = PlacementDrive.query.get_or_404(id)
     drive.status = "REJECTED"
-
     db.session.commit()
-    flash("Placement drive rejected", "warning")
+
+    flash("Drive rejected successfully", "warning")
     return redirect(url_for("main.admin_dashboard"))
-
-
-@bp.route("/admin/student/<int:id>/blacklist")
-def blacklist_student(id):
-
-    if session.get("role") != "ADMIN":
-        return redirect(url_for("main.login"))
-
-    student = User.query.get_or_404(id)
-    student.is_active = False
-
-    db.session.commit()
-    flash("Student blacklisted", "danger")
-    return redirect(url_for("main.admin_dashboard"))
-
 
 # =========================================================
-# COMPANY ROUTES
+# COMPANY DASHBOARD
 # =========================================================
 @bp.route("/company")
 def company_dashboard():
-
     if session.get("role") != "COMPANY":
         return redirect(url_for("main.login"))
 
-    company = CompanyProfile.query.filter_by(user_id=session["user_id"]).first()
+    company = CompanyProfile.query.filter_by(
+        user_id=session["user_id"]
+    ).first_or_404()
 
-    return render_template("company_dashboard.html", company=company)
+    drives = PlacementDrive.query.filter_by(
+        company_id=company.id
+    ).order_by(PlacementDrive.created_at.desc()).all()
+
+    return render_template(
+        "company_dashboard.html",
+        company=company,
+        drives=drives
+    )
 
 
+# =========================================================
+# CREATE PLACEMENT DRIVE
+# =========================================================
 @bp.route("/company/drive/create", methods=["GET", "POST"])
 def create_drive():
-
     if session.get("role") != "COMPANY":
         return redirect(url_for("main.login"))
 
-    company = CompanyProfile.query.filter_by(user_id=session["user_id"]).first()
+    company = CompanyProfile.query.filter_by(
+        user_id=session["user_id"]
+    ).first_or_404()
 
     if company.approval_status != "APPROVED":
         flash("Company not approved yet", "danger")
@@ -296,122 +330,198 @@ def create_drive():
 
     if request.method == "POST":
 
+        job_title = request.form.get("job_title")
+        job_description = request.form.get("job_description")
+        deadline_str = request.form.get("application_deadline")
+
+        if not job_title or not job_description or not deadline_str:
+            flash("All required fields must be filled", "danger")
+            return redirect(url_for("main.create_drive"))
+
+        deadline = datetime.strptime(deadline_str, "%Y-%m-%d").date()
+
         drive = PlacementDrive(
-            job_title=request.form["title"],
-            job_description=request.form["description"],
-            eligibility_criteria=request.form["criteria"],
-            application_deadline=request.form["deadline"],
+            job_title=job_title,
+            job_description=job_description,
+            eligibility_criteria=request.form.get("eligibility_criteria"),
+            required_skills=request.form.get("required_skills"),
+            experience_required=request.form.get("experience_required"),
+            salary_range=request.form.get("salary_range"),
+            application_deadline=deadline,
             company_id=company.id
         )
 
         db.session.add(drive)
         db.session.commit()
 
+        flash("Placement drive created successfully", "success")
         return redirect(url_for("main.company_dashboard"))
 
     return render_template("create_drive.html")
 
-
-@bp.route("/company/application/<int:id>/<status>")
-def update_application_status(id, status):
-
+# =========================================================
+# CLOSE / MARK DRIVE AS COMPLETE
+# =========================================================
+@bp.route("/company/drive/<int:id>/close")
+def close_drive(id):
     if session.get("role") != "COMPANY":
         return redirect(url_for("main.login"))
 
-    application = Application.query.get_or_404(id)
-    application.status = status.upper()
+    drive = PlacementDrive.query.get_or_404(id)
+    company = CompanyProfile.query.filter_by(user_id=session["user_id"]).first()
 
+    if drive.company_id != company.id:
+        flash("Unauthorized action", "danger")
+        return redirect(url_for("main.company_dashboard"))
+
+    drive.status = "CLOSED"
     db.session.commit()
+
+    flash("Drive marked as complete", "success")
     return redirect(url_for("main.company_dashboard"))
 
 
 # =========================================================
-# STUDENT ROUTES
+# VIEW APPLICATIONS FOR A DRIVE
 # =========================================================
+@bp.route("/company/drive/<int:id>/applications")
+def view_applications(id):
+    if session.get("role") != "COMPANY":
+        return redirect(url_for("main.login"))
+
+    drive = PlacementDrive.query.get_or_404(id)
+    company = CompanyProfile.query.filter_by(user_id=session["user_id"]).first()
+
+    if drive.company_id != company.id:
+        flash("Unauthorized access", "danger")
+        return redirect(url_for("main.company_dashboard"))
+
+    applications = Application.query.filter_by(drive_id=id).all()
+
+    return render_template(
+        "company_applications.html",
+        drive=drive,
+        applications=applications
+    )
+
+
+# =========================================================
+# REVIEW SINGLE STUDENT APPLICATION
+# =========================================================
+@bp.route("/company/application/<int:id>")
+def view_application(id):
+    if session.get("role") != "COMPANY":
+        return redirect(url_for("main.login"))
+
+    application = Application.query.get_or_404(id)
+    company = CompanyProfile.query.filter_by(user_id=session["user_id"]).first()
+
+    if application.placement_drive.company_id != company.id:
+        flash("Unauthorized access", "danger")
+        return redirect(url_for("main.company_dashboard"))
+
+    return render_template(
+        "company_view_application.html",
+        application=application
+    )
+
+
+# =========================================================
+# UPDATE APPLICATION STATUS
+# =========================================================
+@bp.route("/company/application/<int:id>/<status>")
+def update_application_status(id, status):
+    if session.get("role") != "COMPANY":
+        return redirect(url_for("main.login"))
+
+    application = Application.query.get_or_404(id)
+    company = CompanyProfile.query.filter_by(user_id=session["user_id"]).first()
+
+    if application.placement_drive.company_id != company.id:
+        flash("Unauthorized action", "danger")
+        return redirect(url_for("main.company_dashboard"))
+
+    application.status = status.upper()
+    db.session.commit()
+
+    flash("Application status updated", "success")
+    return redirect(
+        url_for("main.view_applications",
+                id=application.drive_id)
+    )
+
 @bp.route("/student")
 def student_dashboard():
 
     if session.get("role") != "STUDENT":
         return redirect(url_for("main.login"))
 
-    drives = PlacementDrive.query.filter_by(status="APPROVED").all()
+    student_id = session.get("user_id")
+    if not student_id:
+        return redirect(url_for("main.login"))
 
-    return render_template("student_dashboard.html", drives=drives)
+    today = datetime.utcnow().date()
+    search = request.args.get("search", "").strip()
 
+    from sqlalchemy.orm import joinedload
 
-@bp.route("/apply/<int:drive_id>")
+    drives_query = PlacementDrive.query.options(
+        joinedload(PlacementDrive.company)
+    ).join(CompanyProfile).filter(
+        PlacementDrive.status == "APPROVED",
+        PlacementDrive.application_deadline >= today,
+        CompanyProfile.approval_status == "APPROVED",
+        CompanyProfile.is_blacklisted.is_(False)
+    )
+
+    if search:
+        drives_query = drives_query.filter(
+            (PlacementDrive.job_title.ilike(f"%{search}%")) |
+            (PlacementDrive.required_skills.ilike(f"%{search}%")) |
+            (CompanyProfile.company_name.ilike(f"%{search}%"))
+        )
+
+    drives = drives_query.order_by(
+        PlacementDrive.application_deadline.asc()
+    ).all()
+
+    my_applications = Application.query.filter_by(
+        student_id=student_id
+    ).all()
+
+    return render_template(
+        "student_dashboard.html",
+        drives=drives,
+        my_applications=my_applications
+    )
+@bp.route("/student/drive/<int:drive_id>/apply")
 def apply_drive(drive_id):
 
     if session.get("role") != "STUDENT":
         return redirect(url_for("main.login"))
 
+    drive = PlacementDrive.query.get_or_404(drive_id)
+
+    # Check if already applied
     existing = Application.query.filter_by(
-        student_id=session["user_id"],
-        drive_id=drive_id
+        drive_id=drive_id,
+        student_id=session["user_id"]
     ).first()
 
     if existing:
-        flash("You have already applied", "warning")
+        flash("You already applied to this drive.", "warning")
+        return redirect(url_for("main.student_dashboard"))
 
-    else:
-        application = Application(
-            student_id=session["user_id"],
-            drive_id=drive_id
-        )
+    # Create new application
+    new_application = Application(
+        drive_id=drive_id,
+        student_id=session["user_id"],
+        status="Applied"
+    )
 
-        db.session.add(application)
-        db.session.commit()
-        flash("Application submitted", "success")
+    db.session.add(new_application)
+    db.session.commit()
 
+    flash("Application submitted successfully!", "success")
     return redirect(url_for("main.student_dashboard"))
 
-
-@bp.route("/student/history")
-def application_history():
-
-    if session.get("role") != "STUDENT":
-        return redirect(url_for("main.login"))
-
-    applications = Application.query.filter_by(
-        student_id=session["user_id"]
-    ).order_by(Application.application_date.desc()).all()
-
-    return render_template(
-        "application_history.html",
-        applications=applications
-    )
-
-
-@bp.route("/student/profile", methods=["GET", "POST"])
-def student_profile():
-
-    if session.get("role") != "STUDENT":
-        return redirect(url_for("main.login"))
-
-    user = User.query.get(session["user_id"])
-    profile = StudentProfile.query.filter_by(user_id=user.id).first()
-
-    if request.method == "POST":
-
-        user.full_name = request.form.get("name")
-        profile.qualification = request.form.get("qualification")
-        profile.skills = request.form.get("skills")
-
-        resume = request.files.get("resume")
-
-        if resume:
-            resume_path = f"resumes/{user.id}_{resume.filename}"
-            resume.save(os.path.join("static", resume_path))
-            profile.resume_path = resume_path
-
-        db.session.commit()
-        flash("Profile updated successfully", "success")
-
-    return render_template(
-        "student_profile.html",
-        user=user,
-        profile=profile
-    )
-
-
-# Expose bp for import

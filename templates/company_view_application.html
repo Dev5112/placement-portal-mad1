@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Review Application | Placement Portal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h3 class="mb-4">Student Application Review</h3>
+
+    <!-- ================= Student Details ================= -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>{{ application.student.full_name }}</h5>
+            <p class="mb-1"><strong>Email:</strong> {{ application.student.email }}</p>
+            <p class="mb-1">
+                <strong>Applied for:</strong>
+                {{ application.placement_drive.job_title }}
+            </p>
+            <p class="mb-1">
+                <strong>Current Status:</strong>
+                <span class="badge bg-info">
+                    {{ application.status }}
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <!-- ================= Action Buttons ================= -->
+    <h5 class="mb-3">Update Selection Status</h5>
+
+    <div class="d-flex gap-3">
+        <a href="{{ url_for('main.update_application_status',
+                            id=application.id,
+                            status='SHORTLISTED') }}"
+           class="btn btn-warning">
+            Shortlist
+        </a>
+
+        <a href="{{ url_for('main.update_application_status',
+                            id=application.id,
+                            status='SELECTED') }}"
+           class="btn btn-success">
+            Select
+        </a>
+
+        <a href="{{ url_for('main.update_application_status',
+                            id=application.id,
+                            status='REJECTED') }}"
+           class="btn btn-danger">
+            Reject
+        </a>
+    </div>
+
+    <a href="{{ url_for('main.view_applications',
+                        id=application.drive_id) }}"
+       class="btn btn-secondary mt-4">
+        Back to Applications
+    </a>
+
+</div>
+{% endblock %}

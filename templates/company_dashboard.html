@@ -4,20 +4,27 @@
 {% block content %}
 <div class="container mt-4">
 
-    <h2 class="mb-4">Company Dashboard</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Company Dashboard</h2>
+        <a href="{{ url_for('main.logout') }}" class="btn btn-outline-danger">
+            Logout
+        </a>
+    </div>
 
-    <!-- ================= Company Profile ================= -->
+    <!-- ================= Company Info ================= -->
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title">{{ company.company_name }}</h5>
+            <h4>{{ company.company_name }}</h4>
 
-            <p class="card-text">
-                <strong>Company ID:</strong> {{ company.id }} <br>
-                <strong>HR Contact:</strong> {{ company.hr_contact }} <br>
+            <p class="mb-1"><strong>HR Contact:</strong> {{ company.hr_contact }}</p>
+            <p class="mb-1">
                 <strong>Website:</strong>
                 <a href="{{ company.website }}" target="_blank">
                     {{ company.website }}
-                </a><br>
+                </a>
+            </p>
+
+            <p>
                 <strong>Status:</strong>
                 {% if company.approval_status == "APPROVED" %}
                     <span class="badge bg-success">Approved</span>
@@ -31,59 +38,42 @@
             {% if company.approval_status == "APPROVED" %}
                 <a href="{{ url_for('main.create_drive') }}"
                    class="btn btn-primary">
-                    Create Placement Drive
+                    Create Drive
                 </a>
-            {% else %}
-                <p class="text-danger mt-2">
-                    You can create placement drives only after admin approval.
-                </p>
             {% endif %}
         </div>
     </div>
 
-    <!-- ================= Placement Drives ================= -->
-    <h4 class="mt-4">Your Placement Drives</h4>
+    <!-- ================= Upcoming Drives ================= -->
+    <h4>Upcoming Drives</h4>
 
-    {% if drives %}
+    {% set upcoming = drives | selectattr("status", "equalto", "APPROVED") | list %}
+
+    {% if upcoming %}
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
         <tr>
             <th>Job Title</th>
-            <th>Skills</th>
-            <th>Experience</th>
-            <th>Salary Range</th>
-            <th>Status</th>
-            <th>Applications</th>
+            <th>Deadline</th>
+            <th>Applicants</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        {% for drive in drives %}
+        {% for drive in upcoming %}
         <tr>
             <td>{{ drive.job_title }}</td>
-            <td>{{ drive.required_skills }}</td>
-            <td>{{ drive.experience_required }} years</td>
-            <td>{{ drive.salary_range }}</td>
+            <td>{{ drive.application_deadline }}</td>
+            <td>{{ drive.applications | length }}</td>
             <td>
-                {% if drive.status == "ACTIVE" %}
-                    <span class="badge bg-success">Active</span>
-                {% else %}
-                    <span class="badge bg-secondary">Closed</span>
-                {% endif %}
-            </td>
-            <td>
-                {{ drive.applications|length }}
-            </td>
-            <td>
-                {% if drive.status == "ACTIVE" %}
-                    <a href="{{ url_for('main.close_drive', id=drive.id) }}"
-                       class="btn btn-sm btn-warning">
-                        Close
-                    </a>
-                {% endif %}
                 <a href="{{ url_for('main.view_applications', id=drive.id) }}"
                    class="btn btn-sm btn-info">
                     View Applications
+                </a>
+
+                <a href="{{ url_for('main.close_drive', id=drive.id) }}"
+                   class="btn btn-sm btn-warning">
+                    Mark as Complete
                 </a>
             </td>
         </tr>
@@ -91,7 +81,40 @@
         </tbody>
     </table>
     {% else %}
-        <p>No placement drives created yet.</p>
+        <p>No upcoming drives.</p>
+    {% endif %}
+
+    <!-- ================= Closed Drives ================= -->
+    <h4 class="mt-5">Closed Drives</h4>
+
+    {% set closed = drives | selectattr("status", "equalto", "CLOSED") | list %}
+
+    {% if closed %}
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+        <tr>
+            <th>Job Title</th>
+            <th>Applicants</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for drive in closed %}
+        <tr>
+            <td>{{ drive.job_title }}</td>
+            <td>{{ drive.applications | length }}</td>
+            <td>
+                <a href="{{ url_for('main.view_applications', id=drive.id) }}"
+                   class="btn btn-sm btn-secondary">
+                    View
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No closed drives.</p>
     {% endif %}
 
 </div>
