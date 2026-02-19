@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Student Profile | Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4">Student Profile</h2>
+
+    <!-- Basic Info -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            Basic Information
+        </div>
+        <div class="card-body">
+            <p><strong>Name:</strong> {{ student.full_name }}</p>
+            <p><strong>Email:</strong> {{ student.email }}</p>
+            <p><strong>Qualification:</strong> {{ profile.qualification }}</p>
+            <p><strong>Skills:</strong> {{ profile.skills }}</p>
+
+            {% if profile.resume_path %}
+                <p>
+                    <strong>Resume:</strong>
+                    <a href="{{ url_for('static', filename=profile.resume_path) }}"
+                       target="_blank"
+                       class="btn btn-sm btn-outline-secondary">
+                        View Resume
+                    </a>
+                </p>
+            {% else %}
+                <p><strong>Resume:</strong> Not Uploaded</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Application History -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            Application History
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                <tr>
+                    <th>Company</th>
+                    <th>Job Title</th>
+                    <th>Status</th>
+                    <th>Applied On</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for app in applications %}
+                <tr>
+                    <td>{{ app.placement_drive.company.company_name }}</td>
+                    <td>{{ app.placement_drive.job_title }}</td>
+                    <td>
+                        {% if app.status == "SELECTED" %}
+                            <span class="badge bg-success">{{ app.status }}</span>
+                        {% elif app.status == "REJECTED" %}
+                            <span class="badge bg-danger">{{ app.status }}</span>
+                        {% elif app.status == "SHORTLISTED" %}
+                            <span class="badge bg-info">{{ app.status }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ app.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ app.application_date.strftime('%d %b %Y') }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="text-center">
+                        No applications found.
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a href="{{ url_for('main.admin_dashboard') }}"
+       class="btn btn-outline-primary mt-4">
+        Back to Dashboard
+    </a>
+
+</div>
+{% endblock %}

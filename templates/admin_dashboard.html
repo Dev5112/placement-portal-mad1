@@ -53,15 +53,17 @@
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
         <tr>
-            <th>Company Name</th>
-            <th>HR Contact</th>
-            <th>Approval Status</th>
+            <th class="text-center" style="width: 55px;">Sr No.</th>
+            <th style="width: 10vw;">Company Name</th>
+            <th style="width: 10vw;">HR Contact</th>
+            <th style="width: 10vw;">Approval Status</th>
             <th>Action</th>
         </tr>
         </thead>
         <tbody>
         {% for company in companies %}
         <tr>
+            <td class="text-center" style="width: 55px;">{{ loop.index }}</td>
             <td>{{ company.company_name }}</td>
             <td>{{ company.hr_contact }}</td>
             <td>{{ company.approval_status }}</td>
@@ -73,14 +75,22 @@
                        class="btn btn-sm btn-danger">Reject</a>
                 {% endif %}
 
-                {% if company.is_blacklisted %}
-                    <span class="badge bg-secondary">Blacklisted</span>
-                {% else %}
-                    <a href="{{ url_for('main.blacklist_company', id=company.id) }}"
-                       class="btn btn-sm btn-warning">Blacklist</a>
-                {% endif %}
-            </td>
-        </tr>
+                <form method="POST" action="{{ url_for('main.blacklist_company', id=company.id) }}" style="display:inline;">
+        <input type="text"
+               class="form-control form-control-sm mb-1"
+               placeholder="Enter reason for blacklisting"
+               name="reason"
+               value="{{ company.blacklist_reason if company.blacklist_reason else '' }}">
+
+        {% if company.is_blacklisted %}
+            <button type="submit" class="badge bg-secondary" href="{{url_for('main.blacklist_company', id=company.id)}}">Blacklisted</button>
+        {% else %}
+            <button type="submit"
+                    class="btn btn-sm btn-warning">
+                Blacklist
+            </button>
+        {% endif %}
+    </form></tr>
         {% endfor %}
         </tbody>
     </table>
@@ -91,6 +101,7 @@
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
         <tr>
+            <th class="text-center" style="width: 55px;">Sr No.</th>
             <th>Company</th>
             <th>Job Title</th>
             <th>Deadline</th>
@@ -101,6 +112,7 @@
         <tbody>
         {% for drive in drives %}
         <tr>
+            <td class="text-center" style="width: 55px;">{{ loop.index }}</td>
             <td>{{ drive.company.company_name }}</td>
             <td>{{ drive.job_title }}</td>
             <td>{{ drive.application_deadline }}</td>
@@ -131,6 +143,7 @@
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
         <tr>
+            <th class="text-center" style="width: 55px;">Sr No.</th>
             <th>Name</th>
             <th>Email</th>
             <th>Status</th>
@@ -140,6 +153,7 @@
         <tbody>
         {% for student in students %}
         <tr>
+            <td class="text-center" style="width: 55px;">{{ loop.index }}</td>
             <td>{{ student.full_name }}</td>
             <td>{{ student.email }}</td>
             <td>
@@ -150,9 +164,12 @@
                 {% endif %}
             </td>
             <td>
+                <a href="{{ url_for('main.admin_view_student', id=student.id) }}"
+                class="btn btn-sm btn-info">View</a>
+
                 {% if student.is_active %}
                     <a href="{{ url_for('main.blacklist_student', id=student.id) }}"
-                       class="btn btn-sm btn-warning">Blacklist</a>
+                    class="btn btn-sm btn-warning">Blacklist</a>
                 {% else %}
                     <span class="badge bg-secondary">Deactivated</span>
                 {% endif %}
@@ -168,6 +185,7 @@
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
         <tr>
+            <th class="text-center" style="width: 55px;">Sr No.</th>
             <th>Student</th>
             <th>Company</th>
             <th>Job Title</th>
@@ -177,6 +195,7 @@
         <tbody>
         {% for app in applications %}
         <tr>
+            <td class="text-center" style="width: 55px;">{{ loop.index }}</td>
             <td>{{ app.student.full_name }}</td>
             <td>{{ app.placement_drive.company.company_name }}</td>
             <td>{{ app.placement_drive.job_title }}</td>

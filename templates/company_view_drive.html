@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Drive Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>{{ drive.job_title }}</h3>
+
+    <p><strong>Description:</strong> {{ drive.job_description }}</p>
+    <p><strong>Eligibility:</strong> {{ drive.eligibility_criteria }}</p>
+    <p><strong>Required Skills:</strong> {{ drive.required_skills }}</p>
+    <p><strong>Experience:</strong> {{ drive.experience_required }}</p>
+    <p><strong>Salary Range:</strong> {{ drive.salary_range }}</p>
+    <p><strong>Deadline:</strong> {{ drive.application_deadline }}</p>
+
+    <a href="{{ url_for('main.company_dashboard') }}"
+       class="btn btn-secondary mt-3">
+        Back
+    </a>
+</div>
+{% endblock %}

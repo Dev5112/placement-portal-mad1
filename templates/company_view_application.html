@@ -7,53 +7,112 @@
     <h3 class="mb-4">Student Application Review</h3>
 
     <!-- ================= Student Details ================= -->
-    <div class="card mb-4">
+    <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <h5>{{ application.student.full_name }}</h5>
-            <p class="mb-1"><strong>Email:</strong> {{ application.student.email }}</p>
+
+            <h4 class="mb-3">{{ application.student.full_name }}</h4>
+
+            <p class="mb-1">
+                <strong>Email:</strong>
+                {{ application.student.email }}
+            </p>
+
             <p class="mb-1">
                 <strong>Applied for:</strong>
                 {{ application.placement_drive.job_title }}
             </p>
+
             <p class="mb-1">
-                <strong>Current Status:</strong>
-                <span class="badge bg-info">
-                    {{ application.status }}
-                </span>
+                <strong>Qualification:</strong>
+                {{ application.student.student_profile.qualification
+                   if application.student.student_profile else '-' }}
             </p>
+
+            <p class="mb-2">
+                <strong>Skills:</strong>
+                {{ application.student.student_profile.skills
+                   if application.student.student_profile else '-' }}
+            </p>
+
+            <!-- Status Badge -->
+            <p>
+                <strong>Current Status:</strong>
+
+                {% if application.status == "APPLIED" %}
+                    <span class="badge bg-secondary">Applied</span>
+                {% elif application.status == "SHORTLISTED" %}
+                    <span class="badge bg-warning text-dark">Shortlisted</span>
+                {% elif application.status == "SELECTED" %}
+                    <span class="badge bg-success">Selected</span>
+                {% elif application.status == "REJECTED" %}
+                    <span class="badge bg-danger">Rejected</span>
+                {% elif application.status == "PLACED" %}
+                    <span class="badge bg-primary">Placed</span>
+                {% else %}
+                    <span class="badge bg-info">{{ application.status }}</span>
+                {% endif %}
+            </p>
+
+            <!-- Resume Button -->
+            {% if application.student.student_profile and
+                  application.student.student_profile.resume_path %}
+
+                <a href="{{ url_for('static',
+                        filename=application.student.student_profile.resume_path) }}"
+                   target="_blank"
+                   class="btn btn-outline-dark btn-sm mt-2">
+                    View Resume
+                </a>
+            {% else %}
+                <p class="text-muted mt-2">No resume uploaded.</p>
+            {% endif %}
+
         </div>
     </div>
 
     <!-- ================= Action Buttons ================= -->
     <h5 class="mb-3">Update Selection Status</h5>
 
-    <div class="d-flex gap-3">
+    <div class="d-flex flex-wrap gap-2">
+
         <a href="{{ url_for('main.update_application_status',
                             id=application.id,
                             status='SHORTLISTED') }}"
-           class="btn btn-warning">
+           class="btn btn-warning"
+           onclick="return confirm('Shortlist this candidate?');">
             Shortlist
         </a>
 
         <a href="{{ url_for('main.update_application_status',
                             id=application.id,
                             status='SELECTED') }}"
-           class="btn btn-success">
+           class="btn btn-success"
+           onclick="return confirm('Mark this candidate as selected?');">
             Select
         </a>
 
         <a href="{{ url_for('main.update_application_status',
                             id=application.id,
                             status='REJECTED') }}"
-           class="btn btn-danger">
+           class="btn btn-danger"
+           onclick="return confirm('Reject this candidate?');">
             Reject
         </a>
+
+        <a href="{{ url_for('main.update_application_status',
+                            id=application.id,
+                            status='PLACED') }}"
+           class="btn btn-primary"
+           onclick="return confirm('Mark this candidate as placed?');">
+            Mark as Placed
+        </a>
+
     </div>
 
     <a href="{{ url_for('main.view_applications',
                         id=application.drive_id) }}"
        class="btn btn-secondary mt-4">
-        Back to Applications
+        ← Back to Applications
     </a>
 
 </div>

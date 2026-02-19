@@ -51,6 +51,7 @@ class CompanyProfile(db.Model):
     )  # PENDING / APPROVED / REJECTED
 
     is_blacklisted = db.Column(db.Boolean, default=False)
+    blacklist_reason = db.Column(db.String(250), nullable=True, default=None)
 
     user_id = db.Column(
         db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False
@@ -146,3 +147,27 @@ class Application(db.Model):
 
     def __repr__(self):
         return f"<Application student={self.student_id} drive={self.drive_id}>"
+# -----------------------------
+# NOTIFICATIONS
+# -----------------------------
+class Notification(db.Model):
+    __tablename__ = "notification"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    message = db.Column(db.String(255), nullable=False)
+
+    is_read = db.Column(db.Boolean, default=False)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    student_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    student = db.relationship("User", backref="notifications")
+
+    def __repr__(self):
+        return f"<Notification {self.id} to {self.student_id}>"
