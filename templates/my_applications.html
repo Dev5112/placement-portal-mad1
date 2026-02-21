@@ -6,6 +6,7 @@
 <table class="table table-bordered">
     <thead class="table-dark">
         <tr>
+            <th class="text-center" style="width: 60px;">Sr No.</th>
             <th>Company</th>
             <th>Job Title</th>
             <th>Status</th>
@@ -15,6 +16,7 @@
     <tbody>
         {% for app in applications %}
         <tr>
+            <td class="text-center">{{ loop.index }}</td>
             <td>{{ app.placement_drive.company.company_name }}</td>
             <td>{{ app.placement_drive.job_title }}</td>
             <td>{{ app.status }}</td>

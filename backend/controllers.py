@@ -630,8 +630,8 @@ def student_dashboard():
     # Placement History (Only Selected)
     # =====================================================
     placement_history = [
-        app for app in my_applications if app.status == "SELECTED"
-    ]
+    app for app in my_applications if app.status in ["SELECTED", "PLACED"]
+]
 
     # =====================================================
     # Notifications
@@ -682,7 +682,7 @@ def apply_drive(drive_id):
     new_application = Application(
         drive_id=drive_id,
         student_id=session["user_id"],
-        status="Applied"
+        status="APPLIED"
     )
 
     db.session.add(new_application)

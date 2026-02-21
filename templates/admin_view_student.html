@@ -41,6 +41,7 @@
             <table class="table table-bordered">
                 <thead class="table-light">
                 <tr>
+                    <th class="text-center" style="width: 60px;">Sr No.</th>
                     <th>Company</th>
                     <th>Job Title</th>
                     <th>Status</th>
@@ -50,6 +51,7 @@
                 <tbody>
                 {% for app in applications %}
                 <tr>
+                    <td class="text-center">{{ loop.index }}</td>
                     <td>{{ app.placement_drive.company.company_name }}</td>
                     <td>{{ app.placement_drive.job_title }}</td>
                     <td>
@@ -67,7 +69,7 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="4" class="text-center">
+                    <td colspan="5" class="text-center">
                         No applications found.
                     </td>
                 </tr>

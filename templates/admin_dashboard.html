@@ -46,11 +46,11 @@
     <h4 class="mt-5">Company Registrations</h4>
 
     <form method="get" class="mb-3">
-        <input type="text" name="company_search" class="form-control"
-               placeholder="Search company by name">
+        <input type="text" id="companySearch" name="company_search" class="form-control"
+               placeholder="Search company by name" value="{{ request.args.get('company_search', '') }}">
     </form>
 
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped" id="companyTable">
         <thead class="table-dark">
         <tr>
             <th class="text-center" style="width: 55px;">Sr No.</th>
@@ -136,11 +136,11 @@
     <h4 class="mt-5">Registered Students</h4>
 
     <form method="get" class="mb-3">
-        <input type="text" name="student_search" class="form-control"
-               placeholder="Search student by name or ID">
+        <input type="text" id="studentSearch" name="student_search" class="form-control"
+               placeholder="Search student by name or ID" value="{{ request.args.get('student_search', '') }}">
     </form>
 
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped" id="studentTable">
         <thead class="table-dark">
         <tr>
             <th class="text-center" style="width: 55px;">Sr No.</th>
@@ -206,4 +206,34 @@
     </table>
 
 </div>
+
+<script>
+document.getElementById('companySearch').addEventListener('keyup', function(e) {
+    var filter = e.target.value.toLowerCase();
+    var table = document.getElementById('companyTable');
+    var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var companyName = rows[i].getElementsByTagName('td')[1];
+        if (companyName) {
+            var text = companyName.textContent || companyName.innerText;
+            rows[i].style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+        }
+    }
+});
+
+document.getElementById('studentSearch').addEventListener('keyup', function(e) {
+    var filter = e.target.value.toLowerCase();
+    var table = document.getElementById('studentTable');
+    var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var name = rows[i].getElementsByTagName('td')[1];
+        var email = rows[i].getElementsByTagName('td')[2];
+        if (name || email) {
+            var text = (name ? name.textContent || name.innerText : '') + ' ' + (email ? email.textContent || email.innerText : '');
+            rows[i].style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+        }
+    }
+});
+</script>
+
 {% endblock %}

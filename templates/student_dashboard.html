@@ -62,7 +62,7 @@
 
 <!-- ================= SEARCH ================= -->
 <form method="GET" class="mb-3">
-    <input type="text" name="search"
+    <input type="text" id="driveSearch" name="search"
            class="form-control"
            placeholder="Search by company, job title, or skills"
            value="{{ request.args.get('search','') }}">
@@ -71,9 +71,10 @@
 <!-- ================= AVAILABLE DRIVES ================= -->
 <h4>Available Drives</h4>
 
-<table class="table table-bordered table-striped">
+<table class="table table-bordered table-striped" id="driveTable">
     <thead class="table-dark">
         <tr>
+            <th class="text-center" style="width: 60px;">Sr No.</th>
             <th>Company</th>
             <th>Job Title</th>
             <th>Deadline</th>
@@ -85,33 +86,21 @@
     <tbody>
         {% for drive in drives %}
         <tr>
+            <td class="text-center">{{ loop.index }}</td>
             <td>{{ drive.company.company_name }}</td>
             <td>{{ drive.job_title }}</td>
             <td>{{ drive.application_deadline }}</td>
 
-            {% set applied = false %}
-            {% set status = "" %}
-
+            {% set ns = namespace(has_applied=false) %}
             {% for app in my_applications %}
                 {% if app.drive_id == drive.id %}
-                    {% set applied = true %}
-                    {% set status = app.status %}
+                    {% set ns.has_applied = true %}
                 {% endif %}
             {% endfor %}
 
-            {% if applied %}
-                <td>
-                    {% if status == "SELECTED" %}
-                        <span class="badge bg-success">{{ status }}</span>
-                    {% elif status == "REJECTED" %}
-                        <span class="badge bg-danger">{{ status }}</span>
-                    {% else %}
-                        <span class="badge bg-warning text-dark">{{ status }}</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <span class="badge bg-secondary">Applied</span>
-                </td>
+            {% if ns.has_applied %}
+                <td><span class="badge bg-primary">Applied</span></td>
+                <td><button class="btn btn-sm btn-secondary" disabled>Applied</button></td>
             {% else %}
                 <td>Not Applied</td>
                 <td>
@@ -124,7 +113,7 @@
         </tr>
         {% else %}
         <tr>
-            <td colspan="5" class="text-center">
+            <td colspan="6" class="text-center">
                 No drives available.
             </td>
         </tr>
@@ -141,6 +130,7 @@
 <table class="table table-bordered">
     <thead class="table-light">
         <tr>
+            <th class="text-center" style="width: 60px;">Sr No.</th>
             <th>Company</th>
             <th>Job Title</th>
             <th>Status</th>
@@ -150,6 +140,7 @@
     <tbody>
         {% for app in my_applications %}
         <tr>
+            <td class="text-center">{{ loop.index }}</td>
             <td>{{ app.placement_drive.company.company_name }}</td>
             <td>{{ app.placement_drive.job_title }}</td>
             <td>
@@ -164,7 +155,7 @@
         </tr>
         {% else %}
         <tr>
-            <td colspan="3" class="text-center">
+            <td colspan="4" class="text-center">
                 No applications yet.
             </td>
         </tr>
@@ -181,6 +172,7 @@
 <table class="table table-bordered">
     <thead class="table-success">
         <tr>
+            <th class="text-center" style="width: 60px;">Sr No.</th>
             <th>Company</th>
             <th>Job Title</th>
         </tr>
@@ -189,17 +181,34 @@
     <tbody>
         {% for app in placement_history %}
         <tr>
+            <td class="text-center">{{ loop.index }}</td>
             <td>{{ app.placement_drive.company.company_name }}</td>
             <td>{{ app.placement_drive.job_title }}</td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="2" class="text-center">
+            <td colspan="3" class="text-center">
                 No placement history yet.
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<script>
+document.getElementById('driveSearch').addEventListener('keyup', function(e) {
+    var filter = e.target.value.toLowerCase();
+    var table = document.getElementById('driveTable');
+    var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var company = rows[i].getElementsByTagName('td')[1];
+        var jobTitle = rows[i].getElementsByTagName('td')[2];
+        if (company || jobTitle) {
+            var text = (company ? company.textContent || company.innerText : '') + ' ' + (jobTitle ? jobTitle.textContent || jobTitle.innerText : '');
+            rows[i].style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+        }
+    }
+});
+</script>
 
 {% endblock %}

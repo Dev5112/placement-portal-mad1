@@ -54,6 +54,7 @@
     <table class="table table-bordered table-striped align-middle">
         <thead class="table-dark">
         <tr>
+            <th class="text-center" style="width: 60px;">Sr No.</th>
             <th>Job Title</th>
             <th>Deadline</th>
             <th>Status</th>
@@ -63,6 +64,7 @@
         <tbody>
         {% for drive in pending %}
         <tr>
+            <td class="text-center">{{ loop.index }}</td>
             <td>{{ drive.job_title }}</td>
             <td>{{ drive.application_deadline.strftime('%d-%m-%Y') }}</td>
             <td>
@@ -91,6 +93,7 @@
     <table class="table table-bordered table-striped align-middle">
         <thead class="table-dark">
         <tr>
+            <th class="text-center" style="width: 60px;">Sr No.</th>
             <th>Job Title</th>
             <th>Deadline</th>
             <th>Status</th>
@@ -101,6 +104,7 @@
         <tbody>
         {% for drive in active %}
         <tr>
+            <td class="text-center">{{ loop.index }}</td>
             <td>{{ drive.job_title }}</td>
             <td>{{ drive.application_deadline.strftime('%d-%m-%Y') }}</td>
             <td>
@@ -164,6 +168,7 @@
     <table class="table table-bordered table-striped align-middle">
         <thead class="table-dark">
         <tr>
+            <th class="text-center" style="width: 60px;">Sr No.</th>
             <th>Job Title</th>
             <th>Applicants</th>
             <th>Status</th>
@@ -173,6 +178,7 @@
         <tbody>
         {% for drive in closed %}
         <tr>
+            <td class="text-center">{{ loop.index }}</td>
             <td>{{ drive.job_title }}</td>
             <td>{{ drive.applications | length }}</td>
             <td>
