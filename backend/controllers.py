@@ -12,17 +12,13 @@ from .models import db, User, CompanyProfile, StudentProfile, PlacementDrive, Ap
 
 bp = Blueprint("main", __name__)
 
-# =========================================================
 # HOME
-# =========================================================
+
 @bp.route("/")
 def home():
     return render_template("index.html")
 
-
-# =========================================================
 # AUTHENTICATION
-# =========================================================
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -33,7 +29,7 @@ def login():
 
         if user and check_password_hash(user.password, password):
 
-            # 🔒 COMPANY APPROVAL CHECK (MANDATORY FIX)
+            # COMPANY APPROVAL CHECK (MANDATORY FIX)
             if user.role == "COMPANY":
                 company = CompanyProfile.query.filter_by(user_id=user.id).first()
 
@@ -61,20 +57,18 @@ def logout():
     session.clear()
     return redirect(url_for("main.login"))
 
-# =========================================================
 # STUDENT REGISTRATION (WITH RESUME UPLOAD)
-# =========================================================
 @bp.route("/student/register", methods=["GET", "POST"])
 def student_register():
 
     if request.method == "POST":
 
-        # ================= Check duplicate email =================
+        # Check duplicate email 
         if User.query.filter_by(email=request.form["email"]).first():
             flash("Email already exists", "warning")
             return redirect(url_for("main.student_register"))
 
-        # ================= Create User =================
+        # Create User 
         user = User(
             full_name=request.form["name"],
             email=request.form["email"],
@@ -87,7 +81,7 @@ def student_register():
         db.session.add(user)
         db.session.commit()
 
-        # ================= Handle Resume Upload =================
+        # Handle Resume Upload =================
         resume = request.files.get("resume")
         resume_path = None
 
@@ -108,7 +102,7 @@ def student_register():
             # Store relative path in DB
             resume_path = f"resumes/{filename}"
 
-        # ================= Create Student Profile =================
+        #  Create Student Profile =================
         profile = StudentProfile(
             qualification=request.form["qualification"],
             skills=request.form["skills"],
@@ -124,9 +118,7 @@ def student_register():
 
     return render_template("student_register.html")
 
-# =========================================================
 # COMPANY REGISTRATION
-# =========================================================
 @bp.route("/company/register", methods=["GET", "POST"])
 def company_register():
     if request.method == "POST":
@@ -161,16 +153,14 @@ def company_register():
 
     return render_template("company_register.html")
 
-
-# =========================================================
 # ADMIN DASHBOARD
-# =========================================================
+
 @bp.route("/admin")
 def admin_dashboard():
     if session.get("role") != "ADMIN":
         return redirect(url_for("main.login"))
 
-    # ================= Stats =================
+    #  Stats =================
     stats = {
         "total_students": User.query.filter_by(role="STUDENT").count(),
         "total_companies": CompanyProfile.query.count(),
@@ -178,11 +168,11 @@ def admin_dashboard():
         "total_applications": Application.query.count()
     }
 
-    # ================= Search inputs =================
+    # Search inputs =================
     company_search = request.args.get("company_search", "").strip()
     student_search = request.args.get("student_search", "").strip()
 
-    # ================= Company Search =================
+    #  Company Search =================
     companies = CompanyProfile.query
     if company_search:
         companies = companies.filter(
@@ -190,7 +180,7 @@ def admin_dashboard():
         )
     companies = companies.all()
 
-    # ================= Student Search =================
+    # Student Search =================
     students = User.query.filter_by(role="STUDENT")
     if student_search:
         students = students.filter(
@@ -200,7 +190,7 @@ def admin_dashboard():
         )
     students = students.all()
 
-    # ================= Other Data =================
+    # Other Data =================
     drives = PlacementDrive.query.all()
     applications = Application.query.all()
 
@@ -330,7 +320,7 @@ def reject_drive(id):
 
 
 # COMPANY DASHBOARD
-# =========================================================
+
 @bp.route("/company")
 def company_dashboard():
     if session.get("role") != "COMPANY":
@@ -351,7 +341,6 @@ def company_dashboard():
     )
 
 # CREATE PLACEMENT DRIVE
-# =========================================================
 @bp.route("/company/drive/create", methods=["GET", "POST"])
 def create_drive():
     if session.get("role") != "COMPANY":
@@ -399,7 +388,7 @@ def create_drive():
 
 
 # CLOSE / MARK DRIVE AS COMPLETE
-# =========================================================
+
 @bp.route("/company/drive/<int:id>/close")
 def close_drive(id):
     if session.get("role") != "COMPANY":
@@ -420,7 +409,7 @@ def close_drive(id):
 
 
 # VIEW APPLICATIONS FOR A DRIVE
-# =========================================================
+
 @bp.route("/company/drive/<int:id>/applications")
 def view_applications(id):
     if session.get("role") != "COMPANY":
@@ -456,7 +445,7 @@ def view_drive(id):
 
 
 # REVIEW SINGLE STUDENT APPLICATION
-# =========================================================
+
 @bp.route("/company/application/<int:id>")
 def view_application(id):
     if session.get("role") != "COMPANY":
@@ -557,7 +546,7 @@ def update_application_status(id, status):
     application.status = status.upper()
     db.session.commit()
 
-    # ✅ CREATE NOTIFICATION FOR STUDENT
+    # CREATE NOTIFICATION FOR STUDENT
     notification = Notification(
         student_id=application.student_id,
         message=f"Your application for '{application.placement_drive.job_title}' has been {application.status}."
