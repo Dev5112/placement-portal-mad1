@@ -74,6 +74,11 @@ def student_register():
             flash("Email already exists", "warning")
             return redirect(url_for("main.student_register"))
 
+        # ================= Validation =================
+        if len(request.form["password"]) < 6:
+            flash("Password must be at least 6 characters long", "warning")
+            return redirect(url_for("main.student_register"))
+
         # ================= Create User =================
         user = User(
             full_name=request.form["name"],
@@ -133,6 +138,10 @@ def company_register():
 
         if User.query.filter_by(email=request.form["email"]).first():
             flash("Email already exists", "warning")
+            return redirect(url_for("main.company_register"))
+
+        if len(request.form["password"]) < 6:
+            flash("Password must be at least 6 characters long", "warning")
             return redirect(url_for("main.company_register"))
 
         user = User(
@@ -376,6 +385,10 @@ def create_drive():
             return redirect(url_for("main.create_drive"))
 
         deadline = datetime.strptime(deadline_str, "%Y-%m-%d").date()
+        today = datetime.utcnow().date()
+        if deadline < today:
+            flash("Deadline cannot be in the past", "danger")
+            return redirect(url_for("main.create_drive"))
 
         drive = PlacementDrive(
             job_title=job_title,

@@ -13,6 +13,7 @@
         <input type="text"
                name="job_title"
                class="form-control"
+               minlength="3"
                required>
     </div>
 
@@ -56,6 +57,7 @@
         <label class="form-label">Application Deadline</label>
         <input type="date"
                name="application_deadline"
+               id="application_deadline"
                class="form-control"
                required>
     </div>
@@ -66,4 +68,12 @@
 </form>
 
 </div>
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('application_deadline').setAttribute('min', today);
+});
+</script>
 {% endblock %}
