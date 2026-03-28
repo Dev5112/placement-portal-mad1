@@ -7,8 +7,8 @@
     <h2 class="mb-4">Student Profile</h2>
 
     <!-- Basic Info -->
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
+    <div class="glass-card mb-4 animate-fade-in">
+        <div class="glass-header text-primary">
             Basic Information
         </div>
         <div class="card-body">
@@ -33,14 +33,14 @@
     </div>
 
     <!-- Application History -->
-    <div class="card">
-        <div class="card-header bg-dark text-white">
+    <div class="glass-card animate-fade-in">
+        <div class="glass-header">
             Application History
         </div>
         <div class="card-body">
             <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead class="table-light">
+            <table class="table-modern">
+                <thead >
                 <tr>
                     <th class="text-center" style="width: 60px;">Sr No.</th>
                     <th>Company</th>
@@ -57,13 +57,13 @@
                     <td>{{ app.placement_drive.job_title }}</td>
                     <td>
                         {% if app.status == "SELECTED" %}
-                            <span class="badge bg-success">{{ app.status }}</span>
+                            <span class="badge badge-soft-success">{{ app.status }}</span>
                         {% elif app.status == "REJECTED" %}
-                            <span class="badge bg-danger">{{ app.status }}</span>
+                            <span class="badge badge-soft-danger">{{ app.status }}</span>
                         {% elif app.status == "SHORTLISTED" %}
-                            <span class="badge bg-info">{{ app.status }}</span>
+                            <span class="badge badge-soft-primary">{{ app.status }}</span>
                         {% else %}
-                            <span class="badge bg-secondary">{{ app.status }}</span>
+                            <span class="badge badge-soft-secondary">{{ app.status }}</span>
                         {% endif %}
                     </td>
                     <td>{{ app.application_date.strftime('%d %b %Y') }}</td>
@@ -82,7 +82,7 @@
     </div>
 
     <a href="{{ url_for('main.admin_dashboard') }}"
-       class="btn btn-outline-primary mt-4">
+       class="btn btn-secondary-premium text-primary mt-4">
         Back to Dashboard
     </a>
 

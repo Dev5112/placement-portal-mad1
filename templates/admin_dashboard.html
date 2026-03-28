@@ -61,8 +61,8 @@
     </form>
 
     <div class="table-responsive">
-    <table class="table table-bordered table-striped" id="companyTable">
-        <thead class="table-dark">
+    <table class="table-modern" id="companyTable">
+        <thead >
         <tr>
             <th class="text-center" style="width: 55px;">Sr No.</th>
             <th style="width: 10vw;">Company Name</th>
@@ -79,19 +79,19 @@
             <td>{{ company.hr_contact }}</td>
             <td>
                 {% if company.approval_status == 'APPROVED' %}
-                <span class="badge bg-success">Approved</span>
+                <span class="badge badge-soft-success">Approved</span>
                 {% elif company.approval_status == 'REJECTED' %}
-                <span class="badge bg-danger">Rejected</span>
+                <span class="badge badge-soft-danger">Rejected</span>
                 {% else %}
-                <span class="badge bg-warning text-dark">Pending</span>
+                <span class="badge badge-soft-warning">Pending</span>
                 {% endif %}
             </td>
             <td>
                 {% if company.approval_status == "PENDING" %}
                     <a href="{{ url_for('main.approve_company', id=company.id) }}"
-                       class="btn btn-sm btn-success mb-1">Approve</a>
+                       class="btn btn-premium btn-sm mb-1">Approve</a>
                     <a href="{{ url_for('main.reject_company', id=company.id) }}"
-                       class="btn btn-sm btn-danger mb-1">Reject</a>
+                       class="btn btn-secondary-premium-premium btn-sm text-danger mb-1">Reject</a>
                 {% endif %}
 
                 <form method="POST" action="{{ url_for('main.blacklist_company', id=company.id) }}" style="display:inline-block;">
@@ -102,7 +102,7 @@
                value="{{ company.blacklist_reason if company.blacklist_reason else '' }}">
 
         {% if company.is_blacklisted %}
-            <button type="submit" class="btn btn-sm btn-secondary mb-1">Unblacklist</button>
+            <button type="submit" class="btn btn-sm btn-secondary-premium mb-1">Unblacklist</button>
         {% else %}
             <button type="submit"
                     class="btn btn-sm btn-warning mb-1">
@@ -118,8 +118,8 @@
     <!-- ================= Placement Drives ================= -->
     <h4 class="mt-5">Placement Drives</h4>
 
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
+    <table class="table-modern">
+        <thead >
         <tr>
             <th class="text-center" style="width: 55px;">Sr No.</th>
             <th>Company</th>
@@ -140,11 +140,11 @@
             <td>
                 {% if drive.status == "PENDING" %}
                     <a href="{{ url_for('main.approve_drive', id=drive.id) }}"
-                       class="btn btn-sm btn-success">Approve</a>
+                       class="btn btn-premium btn-sm">Approve</a>
                     <a href="{{ url_for('main.reject_drive', id=drive.id) }}"
-                       class="btn btn-sm btn-danger">Reject</a>
+                       class="btn btn-secondary-premium-premium btn-sm text-danger">Reject</a>
                 {% else %}
-                    <span class="badge bg-success">Approved</span>
+                    <span class="badge badge-soft-success">Approved</span>
                 {% endif %}
             </td>
         </tr>
@@ -160,8 +160,8 @@
                placeholder="Search student by name or ID" value="{{ request.args.get('student_search', '') }}">
     </form>
 
-    <table class="table table-bordered table-striped" id="studentTable">
-        <thead class="table-dark">
+    <table class="table-modern" id="studentTable">
+        <thead >
         <tr>
             <th class="text-center" style="width: 55px;">Sr No.</th>
             <th>Name</th>
@@ -191,7 +191,7 @@
                     <a href="{{ url_for('main.blacklist_student', id=student.id) }}"
                     class="btn btn-sm btn-warning">Blacklist</a>
                 {% else %}
-                    <span class="badge bg-secondary">Deactivated</span>
+                    <span class="badge badge-soft-secondary">Deactivated</span>
                 {% endif %}
             </td>
         </tr>
@@ -202,8 +202,8 @@
     <!-- ================= Applications ================= -->
     <h4 class="mt-5">Job Applications</h4>
 
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
+    <table class="table-modern">
+        <thead >
         <tr>
             <th class="text-center" style="width: 55px;">Sr No.</th>
             <th>Student</th>

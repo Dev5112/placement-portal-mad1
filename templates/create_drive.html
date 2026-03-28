@@ -4,7 +4,8 @@
 {% block content %}
 <div class="container mt-4">
 
-<h3>Create Placement Drive</h3>
+<div class="glass-card animate-fade-in py-4 px-5 mx-auto" style="max-width: 600px;">
+<h3 class="fw-bold mb-4 text-primary">Create Placement Drive</h3>
 
 <form method="post">
 
@@ -62,10 +63,11 @@
                required>
     </div>
 
-    <button type="submit" class="btn btn-success">Create Drive</button>
+    <button type="submit" class="btn btn-premium w-100 mb-2">Create Drive</button>
     <a href="{{ url_for('main.company_dashboard') }}"
-       class="btn btn-secondary">Cancel</a>
+       class="btn btn-secondary-premium w-100">Cancel</a>
 </form>
+</div>
 
 </div>
 

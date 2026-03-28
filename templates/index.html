@@ -5,29 +5,27 @@
 {% block content %}
 
 <!-- ================= HERO SECTION ================= -->
-<div class="row align-items-center py-5">
+<div class="row align-items-center py-5 animate-fade-in">
     <div class="col-md-7">
-        <h1 class="display-5 fw-bold mb-3">
-            Institute Placement Portal
+        <h1 class="hero-title">
+            Launch Your Career with Ease
         </h1>
-        <p class="lead text-muted">
-            A centralized platform connecting students, companies, and the
-            institute placement cell to streamline campus recruitment and
-            placement drive management.
+        <p class="hero-subtitle mb-4">
+            A centralized, intelligent platform connecting top-tier students, premium recruiters, and the institute placement cell to streamline campus recruitment.
         </p>
 
         <div class="mt-4">
             <a href="{{ url_for('main.login') }}"
-               class="btn btn-primary btn-lg me-3">
-                Login
+               class="btn btn-premium btn-lg me-3">
+                Log In
             </a>
             <a href="{{ url_for('main.student_register') }}"
-               class="btn btn-outline-success btn-lg me-2">
-                Student Registration
+               class="btn btn-secondary-premium btn-lg me-2">
+                Join as Student
             </a>
             <a href="{{ url_for('main.company_register') }}"
-               class="btn btn-outline-info btn-lg">
-                Company Registration
+               class="btn btn-secondary-premium btn-lg mt-2 mt-md-0">
+                Register Company
             </a>
         </div>
     </div>
@@ -45,40 +43,40 @@
 <hr class="my-5">
 
 <!-- ================= FEATURES SECTION ================= -->
-<div class="row text-center mb-5">
-    <h3 class="mb-4">Why Use Our Placement Portal?</h3>
+<div class="row text-center mb-5 mt-4">
+    <h3 class="mb-5 fw-bold" style="color: var(--dark-text);">Unlock Your Potential</h3>
 
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
+    <div class="col-md-4 mb-4">
+        <div class="glass-card glass-card-hover h-100 text-center p-4">
             <div class="card-body">
-                <h5 class="card-title">For Students</h5>
-                <p class="card-text text-muted">
-                    Explore placement drives, apply to jobs, track application
-                    status, and get shortlisted by top recruiters.
+                <div class="mb-3" style="font-size: 2.5rem;">🎓</div>
+                <h5 class="card-title fw-bold">For Students</h5>
+                <p class="card-text text-muted mt-3">
+                    Explore exclusive placement drives, flawlessly apply to jobs, track your application lifecycle, and get hired.
                 </p>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
+    <div class="col-md-4 mb-4">
+        <div class="glass-card glass-card-hover h-100 text-center p-4">
             <div class="card-body">
-                <h5 class="card-title">For Companies</h5>
-                <p class="card-text text-muted">
-                    Register your company, post job openings, review student
-                    applications, and hire suitable candidates efficiently.
+                <div class="mb-3" style="font-size: 2.5rem;">🏢</div>
+                <h5 class="card-title fw-bold">For Companies</h5>
+                <p class="card-text text-muted mt-3">
+                    Establish your corporate brand, pipeline opportunities, review detailed applicant profiles, and recruit globally.
                 </p>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
+    <div class="col-md-4 mb-4">
+        <div class="glass-card glass-card-hover h-100 text-center p-4">
             <div class="card-body">
-                <h5 class="card-title">For Placement Cell</h5>
-                <p class="card-text text-muted">
-                    Approve companies, manage placement drives, monitor
-                    applications, and ensure a smooth recruitment process.
+                <div class="mb-3" style="font-size: 2.5rem;">⚙️</div>
+                <h5 class="card-title fw-bold">For Directors</h5>
+                <p class="card-text text-muted mt-3">
+                    Review analytics dynamically, approve tier-1 companies, facilitate mass interviews and orchestrate success.
                 </p>
             </div>
         </div>

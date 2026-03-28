@@ -27,8 +27,8 @@
     <!-- ================= Applications Table ================= -->
     {% if applications %}
     <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle">
-            <thead class="table-dark">
+        <table class="table-modern">
+            <thead >
                 <tr>
                     <th class="text-center" style="width: 60px;">Sr No.</th>
                     <th>Student Name</th>
@@ -83,7 +83,7 @@
                     <!-- Action -->
                     <td>
                         <a href="{{ url_for('main.view_application', id=app.id) }}"
-                           class="btn btn-sm btn-primary">
+                           class="btn btn-premium btn-sm">
                             Review
                         </a>
                     </td>
@@ -102,7 +102,7 @@
 
     <!-- Back Button -->
     <a href="{{ url_for('main.company_dashboard') }}"
-       class="btn btn-secondary mt-3">
+       class="btn btn-secondary-premium mt-3">
         ← Back to Dashboard
     </a>
 

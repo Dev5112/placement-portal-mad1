@@ -14,7 +14,7 @@
                 data-bs-target="#notificationBox">
             🔔 Notifications
             {% if unread_count and unread_count > 0 %}
-                <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                <span class="badge badge-soft-danger position-absolute top-0 start-100 translate-middle">
                     {{ unread_count }}
                 </span>
             {% endif %}
@@ -45,7 +45,7 @@
 
         {% if unread_count and unread_count > 0 %}
         <a href="{{ url_for('main.mark_notifications_read') }}"
-           class="btn btn-sm btn-secondary">
+           class="btn btn-sm btn-secondary-premium">
             Mark All as Read
         </a>
         {% endif %}
@@ -69,7 +69,7 @@
 </form>
 
 <!-- ================= Chart (Student) ================= -->
-<div class="card mb-4 shadow-sm">
+<div class="glass-card mb-4 animate-fade-in">
     <div class="card-body text-center">
         <h5 class="mb-3">My Application Status Distribution</h5>
         <div style="max-width: 400px; margin: 0 auto;">
@@ -82,8 +82,8 @@
 <h4>Available Drives</h4>
 
 <div class="table-responsive">
-<table class="table table-bordered table-striped" id="driveTable">
-    <thead class="table-dark">
+<table class="table-modern" id="driveTable">
+    <thead >
         <tr>
             <th class="text-center" style="width: 60px;">Sr No.</th>
             <th>Company</th>
@@ -111,12 +111,12 @@
 
             {% if ns.has_applied %}
                 <td><span class="badge bg-primary">Applied</span></td>
-                <td><button class="btn btn-sm btn-secondary" disabled>Applied</button></td>
+                <td><button class="btn btn-sm btn-secondary-premium" disabled>Applied</button></td>
             {% else %}
                 <td>Not Applied</td>
                 <td>
                     <a href="{{ url_for('main.apply_drive', drive_id=drive.id) }}"
-                       class="btn btn-sm btn-primary">
+                       class="btn btn-premium btn-sm">
                         Apply
                     </a>
                 </td>
@@ -140,8 +140,8 @@
 <h4>My Applications</h4>
 
 <div class="table-responsive">
-<table class="table table-bordered">
-    <thead class="table-light">
+<table class="table-modern">
+    <thead >
         <tr>
             <th class="text-center" style="width: 60px;">Sr No.</th>
             <th>Company</th>
@@ -158,11 +158,11 @@
             <td>{{ app.placement_drive.job_title }}</td>
             <td>
                 {% if app.status == "SELECTED" %}
-                    <span class="badge bg-success">{{ app.status }}</span>
+                    <span class="badge badge-soft-success">{{ app.status }}</span>
                 {% elif app.status == "REJECTED" %}
-                    <span class="badge bg-danger">{{ app.status }}</span>
+                    <span class="badge badge-soft-danger">{{ app.status }}</span>
                 {% else %}
-                    <span class="badge bg-warning text-dark">{{ app.status }}</span>
+                    <span class="badge badge-soft-warning">{{ app.status }}</span>
                 {% endif %}
             </td>
         </tr>
@@ -184,8 +184,8 @@
 <h4>Placement History</h4>
 
 <div class="table-responsive">
-<table class="table table-bordered">
-    <thead class="table-success">
+<table class="table-modern">
+    <thead >
         <tr>
             <th class="text-center" style="width: 60px;">Sr No.</th>
             <th>Company</th>

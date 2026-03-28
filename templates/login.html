@@ -5,9 +5,9 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-5">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white text-center">
-                <h4>Login</h4>
+        <div class="glass-card animate-fade-in">
+            <div class="glass-header text-center border-0 pb-2 pt-4">
+                <h3 class="fw-bold mb-0" style="color: var(--primary);">Login</h3>
             </div>
 
             <div class="card-body">
@@ -33,14 +33,14 @@
                     </div>
 
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-success">
+                        <button type="submit" class="btn btn-premium w-100 mt-2">
                             Login
                         </button>
                     </div>
                 </form>
             </div>
 
-            <div class="card-footer text-center">
+            <div class="text-center pt-3 pb-4">
                 <small>
                     New student?
                     <a href="{{ url_for('main.student_register') }}">Register here</a>

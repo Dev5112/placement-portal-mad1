@@ -78,7 +78,7 @@
         <a href="{{ url_for('main.update_application_status',
                             id=application.id,
                             status='SHORTLISTED') }}"
-           class="btn btn-warning"
+           class="btn btn-secondary-premium text-warning"
            onclick="return confirm('Shortlist this candidate?');">
             Shortlist
         </a>
@@ -86,7 +86,7 @@
         <a href="{{ url_for('main.update_application_status',
                             id=application.id,
                             status='SELECTED') }}"
-           class="btn btn-success"
+           class="btn btn-premium"
            onclick="return confirm('Mark this candidate as selected?');">
             Select
         </a>
@@ -102,7 +102,7 @@
         <a href="{{ url_for('main.update_application_status',
                             id=application.id,
                             status='PLACED') }}"
-           class="btn btn-primary"
+           class="btn btn-premium"
            onclick="return confirm('Mark this candidate as placed?');">
             Mark as Placed
         </a>
@@ -111,7 +111,7 @@
 
     <a href="{{ url_for('main.view_applications',
                         id=application.drive_id) }}"
-       class="btn btn-secondary mt-4">
+       class="btn btn-secondary-premium mt-4">
         ← Back to Applications
     </a>
 
