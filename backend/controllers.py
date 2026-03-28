@@ -1,4 +1,6 @@
-from flask import render_template, request, redirect, url_for, session, flash, Blueprint
+from flask import render_template, request, redirect, url_for, session, flash, Blueprint, abort
+from flask_login import login_user, logout_user, login_required, current_user
+from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
@@ -11,6 +13,19 @@ from .models import Notification
 from .models import db, User, CompanyProfile, StudentProfile, PlacementDrive, Application
 
 bp = Blueprint("main", __name__)
+
+def role_required(role):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return redirect(url_for('main.login'))
+            if current_user.role != role:
+                flash("You do not have permission to view this page.", "danger")
+                return redirect(url_for('main.login'))
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
 
 # =========================================================
 # HOME
@@ -41,10 +56,8 @@ def login():
                     flash("Your company account is not approved by admin yet.", "warning")
                     return redirect(url_for("main.login"))
 
-            session["user_id"] = user.id
-            session["role"] = user.role
-            session["name"] = user.full_name
-
+            login_user(user)
+            
             if user.role == "ADMIN":
                 return redirect(url_for("main.admin_dashboard"))
             elif user.role == "COMPANY":
@@ -57,7 +70,9 @@ def login():
     return render_template("login.html")
 
 @bp.route("/logout")
+@login_required
 def logout():
+    logout_user()
     session.clear()
     return redirect(url_for("main.login"))
 
@@ -175,10 +190,9 @@ def company_register():
 # ADMIN DASHBOARD
 # =========================================================
 @bp.route("/admin")
+@login_required
+@role_required("ADMIN")
 def admin_dashboard():
-    if session.get("role") != "ADMIN":
-        return redirect(url_for("main.login"))
-
     # ================= Stats =================
     stats = {
         "total_students": User.query.filter_by(role="STUDENT").count(),
@@ -224,10 +238,9 @@ def admin_dashboard():
 
 
 @bp.route("/admin/company/<int:id>/approve")
+@login_required
+@role_required("ADMIN")
 def approve_company(id):
-    if session.get("role") != "ADMIN":
-        return redirect(url_for("main.login"))
-
     company = CompanyProfile.query.get_or_404(id)
     company.approval_status = "APPROVED"
     db.session.commit()
@@ -237,10 +250,9 @@ def approve_company(id):
 
 
 @bp.route("/admin/drive/<int:id>/approve")
+@login_required
+@role_required("ADMIN")
 def approve_drive(id):
-    if session.get("role") != "ADMIN":
-        return redirect(url_for("main.login"))
-
     drive = PlacementDrive.query.get_or_404(id)
     drive.status = "APPROVED"
     db.session.commit()
@@ -249,10 +261,9 @@ def approve_drive(id):
     return redirect(url_for("main.admin_dashboard"))
 
 @bp.route("/admin/student/<int:id>/blacklist")
+@login_required
+@role_required("ADMIN")
 def blacklist_student(id):
-    if session.get("role") != "ADMIN":
-        return redirect(url_for("main.login"))
-
     student_user = User.query.get_or_404(id)
 
     # Disable student login
@@ -270,10 +281,9 @@ def blacklist_student(id):
 
 
 @bp.route("/admin/student/<int:id>")
+@login_required
+@role_required("ADMIN")
 def admin_view_student(id):
-    if session.get("role") != "ADMIN":
-        return redirect(url_for("main.login"))
-
     student = User.query.get_or_404(id)
     profile = StudentProfile.query.filter_by(user_id=id).first()
     applications = Application.query.filter_by(student_id=id).all()
@@ -286,10 +296,9 @@ def admin_view_student(id):
     )
 
 @bp.route("/admin/company/<int:id>/reject")
+@login_required
+@role_required("ADMIN")
 def reject_company(id):
-    if session.get("role") != "ADMIN":
-        return redirect(url_for("main.login"))
-
     company = CompanyProfile.query.get_or_404(id)
     company.approval_status = "REJECTED"
     db.session.commit()
@@ -298,10 +307,9 @@ def reject_company(id):
     return redirect(url_for("main.admin_dashboard"))
 
 @bp.route("/admin/company/<int:id>/blacklist", methods=["POST"])
+@login_required
+@role_required("ADMIN")
 def blacklist_company(id):
-    if session.get("role") != "ADMIN":
-        return redirect(url_for("main.login"))
-
     reason = request.form.get("reason")
 
     company = CompanyProfile.query.get_or_404(id)
@@ -326,10 +334,9 @@ def blacklist_company(id):
 
 
 @bp.route("/admin/drive/<int:id>/reject")
+@login_required
+@role_required("ADMIN")
 def reject_drive(id):
-    if session.get("role") != "ADMIN":
-        return redirect(url_for("main.login"))
-
     drive = PlacementDrive.query.get_or_404(id)
     drive.status = "REJECTED"
     db.session.commit()
@@ -341,12 +348,11 @@ def reject_drive(id):
 # COMPANY DASHBOARD
 # =========================================================
 @bp.route("/company")
+@login_required
+@role_required("COMPANY")
 def company_dashboard():
-    if session.get("role") != "COMPANY":
-        return redirect(url_for("main.login"))
-
     company = CompanyProfile.query.filter_by(
-        user_id=session["user_id"]
+        user_id=current_user.id
     ).first_or_404()
 
     drives = PlacementDrive.query.filter_by(
@@ -362,12 +368,11 @@ def company_dashboard():
 # CREATE PLACEMENT DRIVE
 # =========================================================
 @bp.route("/company/drive/create", methods=["GET", "POST"])
+@login_required
+@role_required("COMPANY")
 def create_drive():
-    if session.get("role") != "COMPANY":
-        return redirect(url_for("main.login"))
-
     company = CompanyProfile.query.filter_by(
-        user_id=session["user_id"]
+        user_id=current_user.id
     ).first_or_404()
 
     if company.approval_status != "APPROVED":
@@ -414,12 +419,11 @@ def create_drive():
 # CLOSE / MARK DRIVE AS COMPLETE
 # =========================================================
 @bp.route("/company/drive/<int:id>/close")
+@login_required
+@role_required("COMPANY")
 def close_drive(id):
-    if session.get("role") != "COMPANY":
-        return redirect(url_for("main.login"))
-
     drive = PlacementDrive.query.get_or_404(id)
-    company = CompanyProfile.query.filter_by(user_id=session["user_id"]).first()
+    company = CompanyProfile.query.filter_by(user_id=current_user.id).first()
 
     if drive.company_id != company.id:
         flash("Unauthorized action", "danger")
@@ -435,12 +439,11 @@ def close_drive(id):
 # VIEW APPLICATIONS FOR A DRIVE
 # =========================================================
 @bp.route("/company/drive/<int:id>/applications")
+@login_required
+@role_required("COMPANY")
 def view_applications(id):
-    if session.get("role") != "COMPANY":
-        return redirect(url_for("main.login"))
-
     drive = PlacementDrive.query.get_or_404(id)
-    company = CompanyProfile.query.filter_by(user_id=session["user_id"]).first()
+    company = CompanyProfile.query.filter_by(user_id=current_user.id).first()
 
     if drive.company_id != company.id:
         flash("Unauthorized access", "danger")
@@ -454,12 +457,11 @@ def view_applications(id):
         applications=applications
     )
 @bp.route("/company/drive/<int:id>")
+@login_required
+@role_required("COMPANY")
 def view_drive(id):
-    if session.get("role") != "COMPANY":
-        return redirect(url_for("main.login"))
-
     drive = PlacementDrive.query.get_or_404(id)
-    company = CompanyProfile.query.filter_by(user_id=session["user_id"]).first()
+    company = CompanyProfile.query.filter_by(user_id=current_user.id).first()
 
     if drive.company_id != company.id:
         flash("Unauthorized access", "danger")
@@ -471,12 +473,11 @@ def view_drive(id):
 # REVIEW SINGLE STUDENT APPLICATION
 # =========================================================
 @bp.route("/company/application/<int:id>")
+@login_required
+@role_required("COMPANY")
 def view_application(id):
-    if session.get("role") != "COMPANY":
-        return redirect(url_for("main.login"))
-
     application = Application.query.get_or_404(id)
-    company = CompanyProfile.query.filter_by(user_id=session["user_id"]).first()
+    company = CompanyProfile.query.filter_by(user_id=current_user.id).first()
 
     if application.placement_drive.company_id != company.id:
         flash("Unauthorized access", "danger")
@@ -487,14 +488,13 @@ def view_application(id):
         application=application
     )
 @bp.route("/company/drive/edit/<int:id>", methods=["GET", "POST"])
+@login_required
+@role_required("COMPANY")
 def edit_drive(id):
-
-    if session.get("role") != "COMPANY":
-        return redirect(url_for("main.login"))
 
     drive = PlacementDrive.query.get_or_404(id)
     company = CompanyProfile.query.filter_by(
-        user_id=session["user_id"]
+        user_id=current_user.id
     ).first()
 
     if drive.company_id != company.id:
@@ -530,14 +530,13 @@ def edit_drive(id):
     )
 
 @bp.route("/company/drive/delete/<int:id>")
+@login_required
+@role_required("COMPANY")
 def delete_drive(id):
-
-    if session.get("role") != "COMPANY":
-        return redirect(url_for("main.login"))
 
     drive = PlacementDrive.query.get_or_404(id)
     company = CompanyProfile.query.filter_by(
-        user_id=session["user_id"]
+        user_id=current_user.id
     ).first()
 
     # 🔒 Ownership Check
@@ -554,13 +553,12 @@ def delete_drive(id):
 # UPDATE APPLICATION STATUS
 # =========================================================
 @bp.route("/company/application/<int:id>/<status>")
+@login_required
+@role_required("COMPANY")
 def update_application_status(id, status):
 
-    if session.get("role") != "COMPANY":
-        return redirect(url_for("main.login"))
-
     application = Application.query.get_or_404(id)
-    company = CompanyProfile.query.filter_by(user_id=session["user_id"]).first()
+    company = CompanyProfile.query.filter_by(user_id=current_user.id).first()
 
     if application.placement_drive.company_id != company.id:
         flash("Unauthorized action", "danger")
@@ -589,15 +587,14 @@ def update_application_status(id, status):
 ###-----Student Dashboard & Application Routes-----###
 
 @bp.route("/student")
+@login_required
+@role_required("STUDENT")
 def student_dashboard():
 
     # -------------------------------
     # Role Check
     # -------------------------------
-    if session.get("role") != "STUDENT":
-        return redirect(url_for("main.login"))
-
-    student_id = session.get("user_id")
+    student_id = current_user.id
     if not student_id:
         return redirect(url_for("main.login"))
 
@@ -674,17 +671,16 @@ def student_dashboard():
 
 
 @bp.route("/student/drive/<int:drive_id>/apply")
+@login_required
+@role_required("STUDENT")
 def apply_drive(drive_id):
-
-    if session.get("role") != "STUDENT":
-        return redirect(url_for("main.login"))
 
     drive = PlacementDrive.query.get_or_404(drive_id)
 
     # Check if already applied
     existing = Application.query.filter_by(
         drive_id=drive_id,
-        student_id=session["user_id"]
+        student_id=current_user.id
     ).first()
 
     if existing:
@@ -694,7 +690,7 @@ def apply_drive(drive_id):
     # Create new application
     new_application = Application(
         drive_id=drive_id,
-        student_id=session["user_id"],
+        student_id=current_user.id,
         status="APPLIED"
     )
 
@@ -708,12 +704,11 @@ def apply_drive(drive_id):
 ### ----- Student Profile Route ----- ###
 
 @bp.route("/student/profile", methods=["GET", "POST"])
+@login_required
+@role_required("STUDENT")
 def student_profile():
 
-    if session.get("role") != "STUDENT":
-        return redirect(url_for("main.login"))
-
-    student_id = session.get("user_id")
+    student_id = current_user.id
     if not student_id:
         return redirect(url_for("main.login"))
 
@@ -754,7 +749,7 @@ def student_profile():
 
 @bp.route("/student/notifications/read")
 def mark_notifications_read():
-    student_id = session.get("user_id")
+    student_id = current_user.id
 
     Notification.query.filter_by(
         student_id=student_id,

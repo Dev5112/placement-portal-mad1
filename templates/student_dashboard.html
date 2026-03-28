@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    fetch('/api/stats/student/{{ session.get("user_id") }}')
+    fetch('/api/stats/student/{{ current_user.id }}')
         .then(response => response.json())
         .then(data => {
             if (data.labels.length === 0) return; 
