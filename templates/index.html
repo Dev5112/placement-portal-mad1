@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Placement Portal{% endblock %}
+
+{% block content %}
+
+<!-- ================= HERO SECTION ================= -->
+<div class="row align-items-center py-5">
+    <div class="col-md-7">
+        <h1 class="display-5 fw-bold mb-3">
+            Institute Placement Portal
+        </h1>
+        <p class="lead text-muted">
+            A centralized platform connecting students, companies, and the
+            institute placement cell to streamline campus recruitment and
+            placement drive management.
+        </p>
+
+        <div class="mt-4">
+            <a href="{{ url_for('main.login') }}"
+               class="btn btn-primary btn-lg me-3">
+                Login
+            </a>
+            <a href="{{ url_for('main.student_register') }}"
+               class="btn btn-outline-success btn-lg me-2">
+                Student Registration
+            </a>
+            <a href="{{ url_for('main.company_register') }}"
+               class="btn btn-outline-info btn-lg">
+                Company Registration
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-5 text-center">
+        <img
+            src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png"
+            class="img-fluid"
+            alt="Placement Portal"
+            style="max-height: 320px;"
+        >
+    </div>
+</div>
+
+<hr class="my-5">
+
+<!-- ================= FEATURES SECTION ================= -->
+<div class="row text-center mb-5">
+    <h3 class="mb-4">Why Use Our Placement Portal?</h3>
+
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">For Students</h5>
+                <p class="card-text text-muted">
+                    Explore placement drives, apply to jobs, track application
+                    status, and get shortlisted by top recruiters.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">For Companies</h5>
+                <p class="card-text text-muted">
+                    Register your company, post job openings, review student
+                    applications, and hire suitable candidates efficiently.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">For Placement Cell</h5>
+                <p class="card-text text-muted">
+                    Approve companies, manage placement drives, monitor
+                    applications, and ensure a smooth recruitment process.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= PROCESS SECTION ================= -->
+<div class="row text-center mb-5">
+    <h3 class="mb-4">How It Works</h3>
+
+    <div class="col-md-3">
+        <p class="fw-bold">1. Register</p>
+        <p class="text-muted">Students and companies register on the portal</p>
+    </div>
+
+    <div class="col-md-3">
+        <p class="fw-bold">2. Approval</p>
+        <p class="text-muted">Placement cell verifies and approves companies</p>
+    </div>
+
+    <div class="col-md-3">
+        <p class="fw-bold">3. Apply</p>
+        <p class="text-muted">Students apply to placement drives</p>
+    </div>
+
+    <div class="col-md-3">
+        <p class="fw-bold">4. Recruit</p>
+        <p class="text-muted">Companies shortlist and select candidates</p>
+    </div>
+</div>
+
+<!-- ================= FOOTER NOTE ================= -->
+<div class="text-center text-muted mb-4">
+    <small>
+        © {{ current_year if current_year else "2026" }}
+        Institute Placement Portal | Built using Flask & SQLite
+    </small>
+</div>
+
+{% endblock %}

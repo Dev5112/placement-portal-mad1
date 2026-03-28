@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block title %}Applications | Placement Portal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- ================= Drive Summary ================= -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4 class="mb-2">
+                Applications for:
+                <span class="text-primary">{{ drive.job_title }}</span>
+            </h4>
+
+            <p class="mb-1">
+                <strong>Application Deadline:</strong>
+                {{ drive.application_deadline.strftime('%d-%m-%Y') }}
+            </p>
+
+            <p class="mb-0">
+                <strong>Total Applications:</strong>
+                {{ applications | length }}
+            </p>
+        </div>
+    </div>
+
+    <!-- ================= Applications Table ================= -->
+    {% if applications %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center" style="width: 60px;">Sr No.</th>
+                    <th>Student Name</th>
+                    <th>Email</th>
+                    <th>Applied On</th>
+                    <th>Status</th>
+                    <th>Resume</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for app in applications %}
+                <tr>
+                    <td class="text-center">{{ loop.index }}</td>
+                    <td>{{ app.student.full_name }}</td>
+                    <td>{{ app.student.email }}</td>
+                    <td>
+                        {% if app.application_date %}
+                            {{ app.application_date.strftime('%d-%m-%Y') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <!-- Status Badge -->
+                    <td>
+                        {% if app.status == "APPLIED" %}
+                            <span class="badge bg-secondary">Applied</span>
+                        {% elif app.status == "SHORTLISTED" %}
+                            <span class="badge bg-warning text-dark">Shortlisted</span>
+                        {% elif app.status == "SELECTED" %}
+                            <span class="badge bg-success">Selected</span>
+                        {% elif app.status == "REJECTED" %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% else %}
+                            <span class="badge bg-info">{{ app.status }}</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Resume Column -->
+                    <td>
+                        {% if app.student.student_profile and app.student.student_profile.resume_path %}
+                            <a href="#resume-{{ app.id }}"
+                               class="btn btn-sm btn-outline-dark">
+                                View
+                            </a>
+                        {% else %}
+                            <span class="text-muted">N/A</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Action -->
+                    <td>
+                        <a href="{{ url_for('main.view_application', id=app.id) }}"
+                           class="btn btn-sm btn-primary">
+                            Review
+                        </a>
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+        <div class="alert alert-info">
+            No students have applied yet.
+        </div>
+    {% endif %}
+
+    <!-- Back Button -->
+    <a href="{{ url_for('main.company_dashboard') }}"
+       class="btn btn-secondary mt-3">
+        ← Back to Dashboard
+    </a>
+
+    <!-- Resume Modals (CSS-only using :target) -->
+    {% if applications %}
+    {% for app in applications %}
+    {% if app.student.student_profile and app.student.student_profile.resume_path %}
+    <div id="resume-{{ app.id }}" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Resume - {{ app.student.full_name }}</h5>
+                <a href="#" class="modal-close">&times;</a>
+            </div>
+            <div class="modal-body">
+                <iframe src="{{ url_for('static', filename=app.student.student_profile.resume_path) }}"
+                        width="100%" height="500px"></iframe>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+</div>
+
+<style>
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-overlay:target {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.modal-close {
+    font-size: 28px;
+    color: #333;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: #000;
+}
+
+.modal-body {
+    padding: 0;
+}
+
+.modal-body iframe {
+    border: none;
+}
+</style>
+
+{% endblock %}

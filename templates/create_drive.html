@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Create Placement Drive{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+<h3>Create Placement Drive</h3>
+
+<form method="post">
+
+    <div class="mb-3">
+        <label class="form-label">Job Title</label>
+        <input type="text"
+               name="job_title"
+               class="form-control"
+               required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Job Description</label>
+        <textarea name="job_description"
+                  class="form-control"
+                  rows="4"
+                  required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Eligibility Criteria</label>
+        <input type="text"
+               name="eligibility_criteria"
+               class="form-control">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Required Skills</label>
+        <input type="text"
+               name="required_skills"
+               class="form-control">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Experience Required (years)</label>
+        <input type="number"
+               name="experience_required"
+               class="form-control">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Salary Range</label>
+        <input type="text"
+               name="salary_range"
+               class="form-control">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Application Deadline</label>
+        <input type="date"
+               name="application_deadline"
+               class="form-control"
+               required>
+    </div>
+
+    <button type="submit" class="btn btn-success">Create Drive</button>
+    <a href="{{ url_for('main.company_dashboard') }}"
+       class="btn btn-secondary">Cancel</a>
+</form>
+
+</div>
+{% endblock %}

@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard | Placement Portal{% endblock %}
+
+{% block content %}
+
+<!-- ================= HEADER WITH NOTIFICATIONS ================= -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Student Dashboard</h2>
+
+    <div>
+        <button class="btn btn-outline-dark position-relative"
+                data-bs-toggle="collapse"
+                data-bs-target="#notificationBox">
+            🔔 Notifications
+            {% if unread_count and unread_count > 0 %}
+                <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                    {{ unread_count }}
+                </span>
+            {% endif %}
+        </button>
+    </div>
+</div>
+
+<!-- ================= NOTIFICATION LIST ================= -->
+<div class="collapse mb-4" id="notificationBox">
+    <div class="card card-body">
+        <h5>Notifications</h5>
+
+        <ul class="list-group mb-3">
+            {% for note in notifications %}
+            <li class="list-group-item {% if not note.is_read %}list-group-item-warning{% endif %}">
+                {{ note.message }}
+                <br>
+                <small class="text-muted">
+                    {{ note.created_at.strftime('%d %b %Y %I:%M %p') }}
+                </small>
+            </li>
+            {% else %}
+            <li class="list-group-item">
+                No notifications.
+            </li>
+            {% endfor %}
+        </ul>
+
+        {% if unread_count and unread_count > 0 %}
+        <a href="{{ url_for('main.mark_notifications_read') }}"
+           class="btn btn-sm btn-secondary">
+            Mark All as Read
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ================= PROFILE BUTTON ================= -->
+<div class="mb-3 text-end">
+    <a href="{{ url_for('main.student_profile') }}"
+       class="btn btn-outline-secondary">
+        My Profile
+    </a>
+</div>
+
+<!-- ================= SEARCH ================= -->
+<form method="GET" class="mb-3">
+    <input type="text" id="driveSearch" name="search"
+           class="form-control"
+           placeholder="Search by company, job title, or skills"
+           value="{{ request.args.get('search','') }}">
+</form>
+
+<!-- ================= AVAILABLE DRIVES ================= -->
+<h4>Available Drives</h4>
+
+<table class="table table-bordered table-striped" id="driveTable">
+    <thead class="table-dark">
+        <tr>
+            <th class="text-center" style="width: 60px;">Sr No.</th>
+            <th>Company</th>
+            <th>Job Title</th>
+            <th>Deadline</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for drive in drives %}
+        <tr>
+            <td class="text-center">{{ loop.index }}</td>
+            <td>{{ drive.company.company_name }}</td>
+            <td>{{ drive.job_title }}</td>
+            <td>{{ drive.application_deadline }}</td>
+
+            {% set ns = namespace(has_applied=false) %}
+            {% for app in my_applications %}
+                {% if app.drive_id == drive.id %}
+                    {% set ns.has_applied = true %}
+                {% endif %}
+            {% endfor %}
+
+            {% if ns.has_applied %}
+                <td><span class="badge bg-primary">Applied</span></td>
+                <td><button class="btn btn-sm btn-secondary" disabled>Applied</button></td>
+            {% else %}
+                <td>Not Applied</td>
+                <td>
+                    <a href="{{ url_for('main.apply_drive', drive_id=drive.id) }}"
+                       class="btn btn-sm btn-primary">
+                        Apply
+                    </a>
+                </td>
+            {% endif %}
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" class="text-center">
+                No drives available.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- ================= MY APPLICATIONS ================= -->
+
+<hr class="my-5">
+
+<h4>My Applications</h4>
+
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th class="text-center" style="width: 60px;">Sr No.</th>
+            <th>Company</th>
+            <th>Job Title</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for app in my_applications %}
+        <tr>
+            <td class="text-center">{{ loop.index }}</td>
+            <td>{{ app.placement_drive.company.company_name }}</td>
+            <td>{{ app.placement_drive.job_title }}</td>
+            <td>
+                {% if app.status == "SELECTED" %}
+                    <span class="badge bg-success">{{ app.status }}</span>
+                {% elif app.status == "REJECTED" %}
+                    <span class="badge bg-danger">{{ app.status }}</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark">{{ app.status }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" class="text-center">
+                No applications yet.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- ================= PLACEMENT HISTORY ================= -->
+
+<hr class="my-5">
+
+<h4>Placement History</h4>
+
+<table class="table table-bordered">
+    <thead class="table-success">
+        <tr>
+            <th class="text-center" style="width: 60px;">Sr No.</th>
+            <th>Company</th>
+            <th>Job Title</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for app in placement_history %}
+        <tr>
+            <td class="text-center">{{ loop.index }}</td>
+            <td>{{ app.placement_drive.company.company_name }}</td>
+            <td>{{ app.placement_drive.job_title }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3" class="text-center">
+                No placement history yet.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+document.getElementById('driveSearch').addEventListener('keyup', function(e) {
+    var filter = e.target.value.toLowerCase();
+    var table = document.getElementById('driveTable');
+    var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var company = rows[i].getElementsByTagName('td')[1];
+        var jobTitle = rows[i].getElementsByTagName('td')[2];
+        if (company || jobTitle) {
+            var text = (company ? company.textContent || company.innerText : '') + ' ' + (jobTitle ? jobTitle.textContent || jobTitle.innerText : '');
+            rows[i].style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+        }
+    }
+});
+</script>
+
+{% endblock %}
