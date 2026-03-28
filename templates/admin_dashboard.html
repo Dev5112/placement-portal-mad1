@@ -42,6 +42,16 @@
         </div>
     </div>
 
+    <!-- ================= Charts (Admin) ================= -->
+    <div class="row mb-5">
+        <div class="col-md-8 mx-auto">
+            <div class="card p-4">
+                <h5 class="text-center mb-3">Portal Statistics Overview</h5>
+                <canvas id="adminChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
     <!-- ================= Company Management ================= -->
     <h4 class="mt-5">Company Registrations</h4>
 
@@ -50,6 +60,7 @@
                placeholder="Search company by name" value="{{ request.args.get('company_search', '') }}">
     </form>
 
+    <div class="table-responsive">
     <table class="table table-bordered table-striped" id="companyTable">
         <thead class="table-dark">
         <tr>
@@ -66,16 +77,24 @@
             <td class="text-center" style="width: 55px;">{{ loop.index }}</td>
             <td>{{ company.company_name }}</td>
             <td>{{ company.hr_contact }}</td>
-            <td>{{ company.approval_status }}</td>
+            <td>
+                {% if company.approval_status == 'APPROVED' %}
+                <span class="badge bg-success">Approved</span>
+                {% elif company.approval_status == 'REJECTED' %}
+                <span class="badge bg-danger">Rejected</span>
+                {% else %}
+                <span class="badge bg-warning text-dark">Pending</span>
+                {% endif %}
+            </td>
             <td>
                 {% if company.approval_status == "PENDING" %}
                     <a href="{{ url_for('main.approve_company', id=company.id) }}"
-                       class="btn btn-sm btn-success">Approve</a>
+                       class="btn btn-sm btn-success mb-1">Approve</a>
                     <a href="{{ url_for('main.reject_company', id=company.id) }}"
-                       class="btn btn-sm btn-danger">Reject</a>
+                       class="btn btn-sm btn-danger mb-1">Reject</a>
                 {% endif %}
 
-                <form method="POST" action="{{ url_for('main.blacklist_company', id=company.id) }}" style="display:inline;">
+                <form method="POST" action="{{ url_for('main.blacklist_company', id=company.id) }}" style="display:inline-block;">
         <input type="text"
                class="form-control form-control-sm mb-1"
                placeholder="Enter reason for blacklisting"
@@ -83,17 +102,18 @@
                value="{{ company.blacklist_reason if company.blacklist_reason else '' }}">
 
         {% if company.is_blacklisted %}
-            <button type="submit" class="badge bg-secondary" href="{{url_for('main.blacklist_company', id=company.id)}}">Blacklisted</button>
+            <button type="submit" class="btn btn-sm btn-secondary mb-1">Unblacklist</button>
         {% else %}
             <button type="submit"
-                    class="btn btn-sm btn-warning">
+                    class="btn btn-sm btn-warning mb-1">
                 Blacklist
             </button>
         {% endif %}
-    </form></tr>
+    </form></td></tr>
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
     <!-- ================= Placement Drives ================= -->
     <h4 class="mt-5">Placement Drives</h4>
@@ -204,36 +224,83 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
 </div>
 
+{% block scripts %}
 <script>
-document.getElementById('companySearch').addEventListener('keyup', function(e) {
-    var filter = e.target.value.toLowerCase();
-    var table = document.getElementById('companyTable');
-    var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-    for (var i = 0; i < rows.length; i++) {
-        var companyName = rows[i].getElementsByTagName('td')[1];
-        if (companyName) {
-            var text = companyName.textContent || companyName.innerText;
-            rows[i].style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+document.addEventListener("DOMContentLoaded", function() {
+    // Search logic Company
+    document.getElementById('companySearch').addEventListener('keyup', function(e) {
+        var filter = e.target.value.toLowerCase();
+        var table = document.getElementById('companyTable');
+        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            var companyName = rows[i].getElementsByTagName('td')[1];
+            if (companyName) {
+                var text = companyName.textContent || companyName.innerText;
+                rows[i].style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+            }
         }
-    }
-});
+    });
 
-document.getElementById('studentSearch').addEventListener('keyup', function(e) {
-    var filter = e.target.value.toLowerCase();
-    var table = document.getElementById('studentTable');
-    var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-    for (var i = 0; i < rows.length; i++) {
-        var name = rows[i].getElementsByTagName('td')[1];
-        var email = rows[i].getElementsByTagName('td')[2];
-        if (name || email) {
-            var text = (name ? name.textContent || name.innerText : '') + ' ' + (email ? email.textContent || email.innerText : '');
-            rows[i].style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+    // Search logic Student
+    document.getElementById('studentSearch').addEventListener('keyup', function(e) {
+        var filter = e.target.value.toLowerCase();
+        var table = document.getElementById('studentTable');
+        if(!table) return;
+        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            var name = rows[i].getElementsByTagName('td')[1];
+            var email = rows[i].getElementsByTagName('td')[2];
+            if (name || email) {
+                var text = (name ? name.textContent || name.innerText : '') + ' ' + (email ? email.textContent || email.innerText : '');
+                rows[i].style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+            }
         }
-    }
+    });
+
+    // Fetch and render Chart parameters
+    fetch('/api/stats/admin')
+        .then(response => response.json())
+        .then(data => {
+            var ctx = document.getElementById('adminChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Job Postings', 'Applications', 'Placements'],
+                    datasets: [{
+                        label: 'Total Metrics',
+                        data: [data.job_postings, data.applications, data.placements],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        });
 });
 </script>
-
 {% endblock %}

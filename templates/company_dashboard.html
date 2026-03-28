@@ -45,12 +45,21 @@
         </div>
     </div>
 
+    <!-- ================= Chart (Company) ================= -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h5 class="text-center mb-3">Application Trends for My Jobs</h5>
+            <canvas id="companyChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
     <!-- ================= Pending Drives ================= -->
     <h4>Pending Drives</h4>
 
     {% set pending = drives | selectattr("status", "equalto", "PENDING") | list %}
 
     {% if pending %}
+    <div class="table-responsive">
     <table class="table table-bordered table-striped align-middle">
         <thead class="table-dark">
         <tr>
@@ -77,6 +86,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
     {% else %}
         <div class="alert alert-info">
             No pending drives.
@@ -90,6 +100,7 @@
     {% set active = drives | selectattr("status", "equalto", "APPROVED") | list %}
 
     {% if active %}
+    <div class="table-responsive">
     <table class="table table-bordered table-striped align-middle">
         <thead class="table-dark">
         <tr>
@@ -152,6 +163,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
     {% else %}
         <div class="alert alert-info">
             No active drives.
@@ -165,6 +177,7 @@
     {% set closed = drives | selectattr("status", "equalto", "CLOSED") | list %}
 
     {% if closed %}
+    <div class="table-responsive">
     <table class="table table-bordered table-striped align-middle">
         <thead class="table-dark">
         <tr>
@@ -194,6 +207,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
     {% else %}
         <div class="alert alert-info">
             No closed drives.
@@ -201,4 +215,40 @@
     {% endif %}
 
 </div>
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('/api/stats/company/{{ company.id }}')
+        .then(response => response.json())
+        .then(data => {
+            if (data.labels.length === 0) return; // No jobs yet
+            var ctx = document.getElementById('companyChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Number of Applications',
+                        data: data.data,
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+        });
+});
+</script>
 {% endblock %}

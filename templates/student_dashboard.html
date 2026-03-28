@@ -68,9 +68,20 @@
            value="{{ request.args.get('search','') }}">
 </form>
 
+<!-- ================= Chart (Student) ================= -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-body text-center">
+        <h5 class="mb-3">My Application Status Distribution</h5>
+        <div style="max-width: 400px; margin: 0 auto;">
+            <canvas id="studentChart" width="200" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
 <!-- ================= AVAILABLE DRIVES ================= -->
 <h4>Available Drives</h4>
 
+<div class="table-responsive">
 <table class="table table-bordered table-striped" id="driveTable">
     <thead class="table-dark">
         <tr>
@@ -120,6 +131,7 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
 
 <!-- ================= MY APPLICATIONS ================= -->
 
@@ -127,6 +139,7 @@
 
 <h4>My Applications</h4>
 
+<div class="table-responsive">
 <table class="table table-bordered">
     <thead class="table-light">
         <tr>
@@ -162,6 +175,7 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
 
 <!-- ================= PLACEMENT HISTORY ================= -->
 
@@ -169,6 +183,7 @@
 
 <h4>Placement History</h4>
 
+<div class="table-responsive">
 <table class="table table-bordered">
     <thead class="table-success">
         <tr>
@@ -194,21 +209,56 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
 
+{% block scripts %}
 <script>
-document.getElementById('driveSearch').addEventListener('keyup', function(e) {
-    var filter = e.target.value.toLowerCase();
-    var table = document.getElementById('driveTable');
-    var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-    for (var i = 0; i < rows.length; i++) {
-        var company = rows[i].getElementsByTagName('td')[1];
-        var jobTitle = rows[i].getElementsByTagName('td')[2];
-        if (company || jobTitle) {
-            var text = (company ? company.textContent || company.innerText : '') + ' ' + (jobTitle ? jobTitle.textContent || jobTitle.innerText : '');
-            rows[i].style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
-        }
+document.addEventListener("DOMContentLoaded", function() {
+    var searchEl = document.getElementById('driveSearch');
+    if(searchEl) {
+        searchEl.addEventListener('keyup', function(e) {
+            var filter = e.target.value.toLowerCase();
+            var table = document.getElementById('driveTable');
+            var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            for (var i = 0; i < rows.length; i++) {
+                var company = rows[i].getElementsByTagName('td')[1];
+                var jobTitle = rows[i].getElementsByTagName('td')[2];
+                if (company || jobTitle) {
+                    var text = (company ? company.textContent || company.innerText : '') + ' ' + (jobTitle ? jobTitle.textContent || jobTitle.innerText : '');
+                    rows[i].style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+                }
+            }
+        });
     }
+
+    fetch('/api/stats/student/{{ session.get("user_id") }}')
+        .then(response => response.json())
+        .then(data => {
+            if (data.labels.length === 0) return; 
+            var ctx = document.getElementById('studentChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                }
+            });
+        });
 });
 </script>
-
 {% endblock %}
