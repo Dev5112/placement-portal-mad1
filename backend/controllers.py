@@ -724,21 +724,45 @@ def student_profile():
         profile.skills = request.form.get("skills")
 
         # ================= Resume Upload =================
-        file = request.files.get("resume")
+        resume_file = request.files.get("resume")
 
-        if file and file.filename != "":
+        if resume_file and resume_file.filename != "":
             # Make filename unique (prevents overwrite)
-            unique_filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename)}"
+            unique_filename = f"{uuid.uuid4().hex}_{secure_filename(resume_file.filename)}"
 
             # IMPORTANT: Use absolute path from app root
             upload_folder = os.path.join(current_app.static_folder, "resumes")
             os.makedirs(upload_folder, exist_ok=True)
 
             filepath = os.path.join(upload_folder, unique_filename)
-            file.save(filepath)
+            resume_file.save(filepath)
 
             # Store only relative path in DB
             profile.resume_path = f"resumes/{unique_filename}"
+
+        # ================= Profile Photo Upload =================
+        photo_file = request.files.get("profile_photo")
+
+        if photo_file and photo_file.filename != "":
+            # Validate file extension (only images)
+            allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
+            file_ext = photo_file.filename.rsplit('.', 1)[1].lower() if '.' in photo_file.filename else ''
+
+            if file_ext in allowed_extensions:
+                # Make filename unique
+                unique_filename = f"{uuid.uuid4().hex}_{secure_filename(photo_file.filename)}"
+
+                # Create profile_photos directory
+                upload_folder = os.path.join(current_app.static_folder, "profile_photos")
+                os.makedirs(upload_folder, exist_ok=True)
+
+                filepath = os.path.join(upload_folder, unique_filename)
+                photo_file.save(filepath)
+
+                # Store only relative path in DB
+                profile.profile_photo_path = f"profile_photos/{unique_filename}"
+            else:
+                flash("Please upload an image file (PNG, JPG, JPEG, GIF)", "warning")
 
         db.session.commit()
         flash("Profile updated successfully!", "success")

@@ -76,6 +76,7 @@ class StudentProfile(db.Model):
     qualification = db.Column(db.String(100), nullable=False)
     skills = db.Column(db.String(250))
     resume_path = db.Column(db.String(250))
+    profile_photo_path = db.Column(db.String(250))
 
     is_blacklisted = db.Column(db.Boolean, default=False)
 
