@@ -114,19 +114,19 @@ def student_register():
         if resume and resume.filename != "":
 
             # Create folder if not exists
-            upload_folder = os.path.join("static", "resumes")
+            upload_folder = os.path.join(current_app.static_folder, "resumes")
             os.makedirs(upload_folder, exist_ok=True)
 
             # Secure filename
             from werkzeug.utils import secure_filename
-            filename = secure_filename(resume.filename)
+            unique_filename = f"{uuid.uuid4().hex}_{secure_filename(resume.filename)}"
 
             # Save file
-            filepath = os.path.join(upload_folder, filename)
+            filepath = os.path.join(upload_folder, unique_filename)
             resume.save(filepath)
 
             # Store relative path in DB
-            resume_path = f"resumes/{filename}"
+            resume_path = f"resumes/{unique_filename}"
 
         # ================= Create Student Profile =================
         profile = StudentProfile(
@@ -266,17 +266,20 @@ def approve_drive(id):
 def blacklist_student(id):
     student_user = User.query.get_or_404(id)
 
-    # Disable student login
-    student_user.is_active = False
-
-    # Optional: mark profile blacklist (if you want tracking)
     student_profile = StudentProfile.query.filter_by(user_id=id).first()
-    if student_profile:
-        student_profile.is_blacklisted = True
+
+    if student_user.is_active:
+        student_user.is_active = False
+        if student_profile:
+            student_profile.is_blacklisted = True
+        flash("Student blacklisted successfully", "danger")
+    else:
+        student_user.is_active = True
+        if student_profile:
+            student_profile.is_blacklisted = False
+        flash("Student unblacklisted successfully", "success")
 
     db.session.commit()
-
-    flash("Student blacklisted successfully", "danger")
     return redirect(url_for("main.admin_dashboard"))
 
 
@@ -728,7 +731,7 @@ def student_profile():
             unique_filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename)}"
 
             # IMPORTANT: Use absolute path from app root
-            upload_folder = os.path.join(current_app.root_path, "static", "resumes")
+            upload_folder = os.path.join(current_app.static_folder, "resumes")
             os.makedirs(upload_folder, exist_ok=True)
 
             filepath = os.path.join(upload_folder, unique_filename)

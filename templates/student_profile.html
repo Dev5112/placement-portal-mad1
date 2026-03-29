@@ -3,69 +3,117 @@
 {% block title %}My Profile | Placement Portal{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">My Profile</h2>
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-3 mb-md-0" style="color: var(--dark-text);">Student Profile</h2>
+        <a href="{{ url_for('main.student_dashboard') }}" class="btn btn-outline-secondary shadow-sm">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="glass-card animate-fade-in">
-            <div class="card-header bg-secondary text-white">
-                Update Profile
-            </div>
-
-            <div class="card-body">
-                <form method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label class="form-label">Full Name</label>
-                        <input type="text"
-                               name="name"
-                               class="form-control"
-                               value="{{ user.full_name }}"
-                               required>
+    <div class="row g-4 animate-fade-in">
+        <!-- ================= Profile Overview Sidebar ================= -->
+        <div class="col-lg-4">
+            <div class="glass-card border-0 shadow-sm text-center p-4 h-100 d-flex flex-column align-items-center position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 100%);">
+                <!-- Decorative background blob -->
+                <div class="position-absolute" style="top: -50px; left: -50px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 70%); border-radius: 50%;"></div>
+                
+                <div class="rounded-circle d-flex align-items-center justify-content-center shadow-lg mb-4 mt-3 position-relative z-1" style="width: 120px; height: 120px; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color: white; font-size: 3rem; font-weight: bold; border: 4px solid white;">
+                    {{ (user.full_name or 'U')[0] | upper }}
+                </div>
+                
+                <h4 class="fw-bold mb-1" style="color: var(--dark-text);">{{ user.full_name }}</h4>
+                <p class="text-muted mb-4 px-3 py-1 bg-light rounded-pill small">{{ user.email }}</p>
+                
+                <div class="w-100 mt-2 text-start px-2">
+                    <p class="mb-3 d-flex align-items-center">
+                        <i class="fas fa-graduation-cap text-primary me-3 fs-5" style="width: 25px; text-align: center;"></i> 
+                        <span class="text-dark">{{ profile.qualification }}</span>
+                    </p>
+                    
+                    <div class="mb-4">
+                        <p class="mb-2 text-muted small fw-bold text-uppercase tracking-widest">Skills</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% if profile.skills %}
+                                {% for skill in profile.skills.split(',') %}
+                                    <span class="badge bg-white shadow-sm text-primary border px-3 py-2 rounded-pill">{{ skill.strip() }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted small">No skills specified</span>
+                            {% endif %}
+                        </div>
                     </div>
+                </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Qualification</label>
-                        <input type="text"
-                               name="qualification"
-                               class="form-control"
-                               value="{{ profile.qualification }}"
-                               required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Skills</label>
-                        <textarea name="skills"
-                                  class="form-control"
-                                  rows="3">{{ profile.skills }}</textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Upload Resume</label>
-                        <input type="file"
-                               name="resume"
-                               class="form-control"
-                               accept=".pdf,.doc,.docx">
-                        {% if profile.resume_path %}
-                            <small class="text-muted">
-                                Current resume:
-                                <a href="{{ url_for('static', filename=profile.resume_path) }}"
-                                   target="_blank">View</a>
-                            </small>
-                        {% endif %}
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-premium">
-                            Update Profile
+                <div class="mt-auto w-100 pt-4">
+                    {% if profile.resume_path %}
+                        <a href="{{ url_for('static', filename=profile.resume_path) }}" target="_blank" class="btn btn-premium w-100 shadow-sm py-2">
+                            <i class="fas fa-file-pdf me-2"></i> View Active Resume
+                        </a>
+                    {% else %}
+                        <button class="btn btn-outline-danger w-100 shadow-sm py-2" disabled>
+                            <i class="fas fa-exclamation-circle me-2"></i> No Resume Uploaded
                         </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= Update Profile Form ================= -->
+        <div class="col-lg-8">
+            <div class="glass-card border-0 shadow-sm p-4 p-md-5 h-100">
+                <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 48px; height: 48px;">
+                        <i class="fas fa-user-edit fs-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Edit Profile Details</h4>
+                        <p class="text-muted small mb-0 mt-1">Keep your profile updated to stand out to recruiters</p>
+                    </div>
+                </div>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="row g-4">
+                        <div class="col-md-6 form-group">
+                            <label class="form-label fw-bold text-muted small text-uppercase tracking-widest">Full Name</label>
+                            <input type="text" name="name" class="form-control form-control-lg bg-light border-0 shadow-none px-3 py-2" value="{{ user.full_name }}" required>
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label class="form-label fw-bold text-muted small text-uppercase tracking-widest">Account Email</label>
+                            <input type="email" class="form-control form-control-lg bg-light border-0 shadow-none text-muted px-3 py-2" value="{{ user.email }}" disabled>
+                            <small class="text-muted mt-2 d-inline-block" style="font-size: 0.75rem;"><i class="fas fa-lock me-1"></i> Contact Administrator to change</small>
+                        </div>
+
+                        <div class="col-12 form-group">
+                            <label class="form-label fw-bold text-muted small text-uppercase tracking-widest">Qualification</label>
+                            <input type="text" name="qualification" class="form-control form-control-lg bg-light border-0 shadow-none px-3 py-2" value="{{ profile.qualification }}" placeholder="e.g. B.Tech Computer Science" required>
+                        </div>
+
+                        <div class="col-12 form-group">
+                            <label class="form-label fw-bold text-muted small text-uppercase tracking-widest">Technical Skills</label>
+                            <textarea name="skills" class="form-control form-control-lg bg-light border-0 shadow-none px-3 py-2" rows="3" placeholder="e.g. Python, Java, React (Comma separated)">{{ profile.skills }}</textarea>
+                            <small class="text-muted mt-2 d-inline-block" style="font-size: 0.75rem;">Separate multiple skills with commas</small>
+                        </div>
+
+                        <div class="col-12 form-group">
+                            <label class="form-label fw-bold text-muted small text-uppercase tracking-widest">Upload New Resume</label>
+                            <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                                <span class="input-group-text bg-white border-end-0 text-muted px-4"><i class="fas fa-cloud-upload-alt fs-5"></i></span>
+                                <input type="file" name="resume" class="form-control form-control-lg bg-white border-start-0 ps-0 shadow-none" accept=".pdf,.doc,.docx">
+                            </div>
+                            <small class="text-muted mt-2 d-inline-block" style="font-size: 0.75rem;">Accepted formats: .pdf, .doc, .docx. Keep files below 5MB.</small>
+                        </div>
+
+                        <div class="col-12 mt-5">
+                            <button type="submit" class="btn btn-premium btn-lg w-100 shadow-sm py-3" style="font-size: 1.1rem;">
+                                <i class="fas fa-save me-2"></i> Save Profile Changes
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
-<a href="{{ url_for('main.student_dashboard') }}" class="btn btn-secondary-premium text-primary mt-4">
-    Back to Dashboard
-</a>
 {% endblock %}

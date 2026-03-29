@@ -1,118 +1,167 @@
 {% extends "base.html" %}
 
-{% block title %}Home | Placement Portal{% endblock %}
+{% block title %}Home | PlacementHQ{% endblock %}
+
+{% block body_class %}{% endblock %}
 
 {% block content %}
+<!-- Dynamic Background -->
+<div class="blob-container">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+</div>
 
 <!-- ================= HERO SECTION ================= -->
-<div class="row align-items-center py-5 animate-fade-in">
-    <div class="col-md-7">
-        <h1 class="hero-title">
-            Launch Your Career with Ease
+<div class="row align-items-center py-5 animate-fade-in" style="min-height: 80vh;">
+    <div class="col-lg-6 mb-5 mb-lg-0 text-center text-lg-start">
+        <div class="badge-soft-primary mb-3 d-inline-block">Welcome to PlacementHQ</div>
+        <h1 class="hero-title"
+            style="background: linear-gradient(135deg, #111827 0%, #4F46E5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Launch Your Career<br>With Precision
         </h1>
-        <p class="hero-subtitle mb-4">
-            A centralized, intelligent platform connecting top-tier students, premium recruiters, and the institute placement cell to streamline campus recruitment.
+        <p class="hero-subtitle mb-5 mx-auto mx-lg-0">
+            A centralized, intelligent platform connecting top-tier students, premium recruiters, and the institute
+            placement cell to streamline campus recruitment.
         </p>
 
-        <div class="mt-4">
-            <a href="{{ url_for('main.login') }}"
-               class="btn btn-premium btn-lg me-3">
-                Log In
+        <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-lg-start gap-3">
+            <a href="{{ url_for('main.login') }}" class="btn btn-premium btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i> Log In
             </a>
-            <a href="{{ url_for('main.student_register') }}"
-               class="btn btn-secondary-premium btn-lg me-2">
+            <a href="{{ url_for('main.student_register') }}" class="btn btn-secondary-premium btn-lg">
                 Join as Student
             </a>
-            <a href="{{ url_for('main.company_register') }}"
-               class="btn btn-secondary-premium btn-lg mt-2 mt-md-0">
-                Register Company
+            <a href="{{ url_for('main.company_register') }}" class="btn btn-secondary-premium btn-lg">
+                Join as Company
             </a>
         </div>
     </div>
 
-    <div class="col-md-5 text-center">
-        <img
-            src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png"
-            class="img-fluid"
-            alt="Placement Portal"
-            style="max-height: 320px;"
-        >
+    <div class="col-lg-6 text-center position-relative">
+        <img src="{{ url_for('static', filename='images/hero_image.png') }}" class="img-fluid floating-image"
+            alt="Placement Portal Abstract Tech"
+            style="max-height: 500px; filter: drop-shadow(0 15px 30px rgba(79, 70, 229, 0.2)); object-fit: contain;">
+        <!-- Decorative Glow -->
+        <div
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%); z-index: -1;">
+        </div>
     </div>
 </div>
 
-<hr class="my-5">
+<div class="text-center mb-5 animate-fade-in" style="animation-delay: 0.3s; opacity: 0; animation-fill-mode: forwards;">
+    <p class="text-uppercase tracking-widest text-muted small fw-bold mb-4">Trusted by Industry Leaders</p>
+    <div class="d-flex justify-content-center flex-wrap gap-4 opacity-50">
+        <h5 class="mx-3 m-0" style="font-weight: 800; letter-spacing: 1px; color: var(--dark-text);">Google</h5>
+        <h5 class="mx-3 m-0" style="font-weight: 800; letter-spacing: 1px; color: var(--dark-text);">Microsoft</h5>
+        <h5 class="mx-3 m-0" style="font-weight: 800; letter-spacing: 1px; color: var(--dark-text);">JPMorgan</h5>
+        <h5 class="mx-3 m-0" style="font-weight: 800; letter-spacing: 1px; color: var(--dark-text);">Amazon</h5>
+    </div>
+</div>
+
+<hr style="border-color: rgba(0,0,0,0.1);" class="my-5">
 
 <!-- ================= FEATURES SECTION ================= -->
-<div class="row text-center mb-5 mt-4">
-    <h3 class="mb-5 fw-bold" style="color: var(--dark-text);">Unlock Your Potential</h3>
+<div class="row text-center mb-5 py-4">
+    <div class="col-12 mb-5 animate-fade-in" style="animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards;">
+        <h2 class="fw-bold mb-2">Unlock Your Potential</h2>
+        <p class="text-muted">A premium workflow tailored for all major stakeholders</p>
+    </div>
 
-    <div class="col-md-4 mb-4">
-        <div class="glass-card glass-card-hover h-100 text-center p-4">
-            <div class="card-body">
-                <div class="mb-3" style="font-size: 2.5rem;">🎓</div>
-                <h5 class="card-title fw-bold">For Students</h5>
-                <p class="card-text text-muted mt-3">
-                    Explore exclusive placement drives, flawlessly apply to jobs, track your application lifecycle, and get hired.
-                </p>
-            </div>
+    <div class="col-lg-4 mb-4 animate-fade-in"
+        style="animation-delay: 0.5s; opacity: 0; animation-fill-mode: forwards;">
+        <div class="glass-card glass-card-hover h-100 text-center p-5">
+            <div class="glass-icon-container">🎓</div>
+            <h4 class="card-title fw-bold mb-3">For Students</h4>
+            <p class="card-text text-muted">
+                Explore exclusive placement drives, flawlessly apply to jobs, track your application lifecycle, and get
+                hired instantly.
+            </p>
         </div>
     </div>
 
-    <div class="col-md-4 mb-4">
-        <div class="glass-card glass-card-hover h-100 text-center p-4">
-            <div class="card-body">
-                <div class="mb-3" style="font-size: 2.5rem;">🏢</div>
-                <h5 class="card-title fw-bold">For Companies</h5>
-                <p class="card-text text-muted mt-3">
-                    Establish your corporate brand, pipeline opportunities, review detailed applicant profiles, and recruit globally.
-                </p>
-            </div>
+    <div class="col-lg-4 mb-4 animate-fade-in"
+        style="animation-delay: 0.6s; opacity: 0; animation-fill-mode: forwards;">
+        <div class="glass-card glass-card-hover h-100 text-center p-5">
+            <div class="glass-icon-container">🏢</div>
+            <h4 class="card-title fw-bold mb-3">For Companies</h4>
+            <p class="card-text text-muted">
+                Establish your corporate brand, pipeline opportunities, review detailed applicant profiles, and recruit
+                globally.
+            </p>
         </div>
     </div>
 
-    <div class="col-md-4 mb-4">
-        <div class="glass-card glass-card-hover h-100 text-center p-4">
-            <div class="card-body">
-                <div class="mb-3" style="font-size: 2.5rem;">⚙️</div>
-                <h5 class="card-title fw-bold">For Directors</h5>
-                <p class="card-text text-muted mt-3">
-                    Review analytics dynamically, approve tier-1 companies, facilitate mass interviews and orchestrate success.
-                </p>
+    <div class="col-lg-4 mb-4 animate-fade-in"
+        style="animation-delay: 0.7s; opacity: 0; animation-fill-mode: forwards;">
+        <div class="glass-card glass-card-hover h-100 text-center p-5">
+            <div class="glass-icon-container">⚙️</div>
+            <h4 class="card-title fw-bold mb-3">For Directors</h4>
+            <p class="card-text text-muted">
+                Review analytics dynamically, approve tier-1 companies, facilitate mass interviews and orchestrate
+                campus success.
+            </p>
+        </div>
+    </div>
+</div>
+
+<hr style="border-color: rgba(0,0,0,0.1);" class="my-5">
+
+<!-- ================= PROCESS SECTION ================= -->
+<div class="py-5 mb-5 animate-fade-in" style="animation-delay: 0.8s; opacity: 0; animation-fill-mode: forwards;">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">How It Works</h2>
+        <p class="text-muted">Four simple steps to streamling the recruitment journey</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h5 class="fw-bold mb-2 mt-2">Register</h5>
+                <p class="text-muted small m-0">Students and companies create premium profiles on the platform.</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h5 class="fw-bold mb-2 mt-2">Approval</h5>
+                <p class="text-muted small m-0">Placement cell administrators verify and whitelist companies.</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h5 class="fw-bold mb-2 mt-2">Apply</h5>
+                <p class="text-muted small m-0">Students browse open drives and submit their structured resumes.</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h5 class="fw-bold mb-2 mt-2">Recruit</h5>
+                <p class="text-muted small m-0">Companies shortlist, interview, and extend offers to top talent.</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ================= PROCESS SECTION ================= -->
-<div class="row text-center mb-5">
-    <h3 class="mb-4">How It Works</h3>
-
-    <div class="col-md-3">
-        <p class="fw-bold">1. Register</p>
-        <p class="text-muted">Students and companies register on the portal</p>
-    </div>
-
-    <div class="col-md-3">
-        <p class="fw-bold">2. Approval</p>
-        <p class="text-muted">Placement cell verifies and approves companies</p>
-    </div>
-
-    <div class="col-md-3">
-        <p class="fw-bold">3. Apply</p>
-        <p class="text-muted">Students apply to placement drives</p>
-    </div>
-
-    <div class="col-md-3">
-        <p class="fw-bold">4. Recruit</p>
-        <p class="text-muted">Companies shortlist and select candidates</p>
-    </div>
+<!-- ================= CTA SECTION ================= -->
+<div class="glass-card p-5 text-center mb-5 mx-auto animate-fade-in"
+    style="max-width: 800px; animation-delay: 0.9s; opacity: 0; animation-fill-mode: forwards; background: linear-gradient(135deg, rgba(79, 70, 229, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);">
+    <h2 class="fw-bold mb-3">Ready to accelerate?</h2>
+    <p class="text-muted mb-4">Join hundreds of students and tier-1 companies already using PlacementHQ.</p>
+    <a href="{{ url_for('main.student_register') }}" class="btn btn-premium btn-lg px-5 py-3 shadow-lg">Get Started
+        Today ➔</a>
 </div>
 
 <!-- ================= FOOTER NOTE ================= -->
-<div class="text-center text-muted mb-4">
+<div class="text-center text-muted mb-4 pb-4">
     <small>
-        © {{ current_year if current_year else "2026" }}
-        Institute Placement Portal | Built using Flask & SQLite
+        &copy; 2026 PlacementHQ. All rights reserved. | Empowering your tech career journey.
     </small>
 </div>
 

@@ -9,7 +9,7 @@ app = create_app()
 
 print("Placement Portal application started...")
 
-# ✅ DB creation + default admin
+#  DB creation + default admin
 with app.app_context():
     db.create_all()
 
