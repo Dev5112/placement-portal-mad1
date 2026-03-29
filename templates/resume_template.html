@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Resume</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-bg: #3d3d3d;
+            --sidebar-text: #e0e0e0;
+            --main-bg: #ffffff;
+            --main-text: #333333;
+            --primary-accent: #222222;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            color: var(--main-text);
+        }
+
+        .resume-container {
+            display: flex;
+            width: 210mm; /* A4 width */
+            min-height: 297mm; /* A4 height */
+            background-color: var(--main-bg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 40px auto;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 30%;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            padding: 40px 30px;
+            box-sizing: border-box;
+        }
+
+        .profile-img-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #555;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .sidebar-section {
+            margin-bottom: 35px;
+        }
+
+        .sidebar-title {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #ffffff;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #555;
+            padding-bottom: 5px;
+        }
+
+        .sidebar-text {
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-link {
+            color: var(--sidebar-text);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .sidebar-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        .sidebar-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-list li {
+            font-size: 13px;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 15px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #fff;
+        }
+
+        .reference-block {
+            margin-bottom: 15px;
+        }
+
+        .ref-name {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 15px;
+            color: #fff;
+            margin: 0 0 3px 0;
+            letter-spacing: 1px;
+        }
+        
+        .ref-title {
+            font-size: 12px;
+            margin: 0 0 5px 0;
+            color: #ccc;
+        }
+
+        /* Main Content */
+        .main-content {
+            width: 70%;
+            padding: 50px 40px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+        }
+
+        .name-title-container {
+            flex: 1;
+        }
+
+        .name {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 800;
+            font-size: 46px;
+            line-height: 1;
+            text-transform: uppercase;
+            color: var(--primary-accent);
+            margin: 0 0 10px 0;
+            letter-spacing: 1px;
+        }
+
+        .job-title {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #666;
+            margin: 0;
+        }
+
+        .contact-info {
+            flex: 0 0 200px;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            color: #555;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        
+        .contact-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .contact-icon {
+            width: 22px;
+            height: 22px;
+            background-color: var(--primary-accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .main-section {
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary-accent);
+            margin-bottom: 25px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+        /* Timeline blocks */
+        .timeline-item {
+            display: flex;
+            margin-bottom: 30px;
+        }
+
+        .timeline-left {
+            width: 140px;
+            padding-right: 25px;
+            text-align: left;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .timeline-left::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 5px;
+            bottom: -35px;
+            width: 2px;
+            background-color: #555;
+        }
+        .timeline-item:last-child .timeline-left::after {
+            bottom: -5px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            right: -4px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            background-color: #555;
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .org-name {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #444;
+            margin: 0 0 5px 0;
+        }
+
+        .org-location, .org-date {
+            font-size: 11px;
+            color: #777;
+            margin: 0 0 2px 0;
+        }
+
+        .timeline-right {
+            padding-left: 25px;
+            flex: 1;
+        }
+
+        .role-title {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            color: #444;
+            margin: 0 0 10px 0;
+        }
+
+        .role-desc {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.6;
+            margin: 0 0 6px 0;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .role-desc::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #888;
+        }
+
+        /* Skills block */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 40px;
+        }
+
+        .skill-item {
+            margin-bottom: 5px;
+        }
+
+        .skill-label {
+            font-family: 'Raleway', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: #444;
+            letter-spacing: 1px;
+        }
+
+        .progress-bar-bg {
+            height: 4px;
+            background-color: #eee;
+            width: 100%;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #555;
+        }
+
+        /* Print formatting */
+        @media print {
+            body { background-color: white; margin: 0; }
+            .resume-container { margin: 0; box-shadow: none; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="resume-container">
+        <!-- LEFT SIDEBAR -->
+        <div class="sidebar">
+            <div class="profile-img-container">
+                <!-- Using a professional placeholder image from unsplash -->
+                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=300" alt="Profile Photo" class="profile-img">
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">About Me</div>
+                <p class="sidebar-text">
+                    Highly creative and multi-talented professional with extensive experience in system design, technology implementation, and team leadership. Exceptional collaborative and interpersonal skills; dynamic team player with well-developed written and verbal communication abilities.
+                </p>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Links</div>
+                <div class="sidebar-text">
+                    <strong>LinkedIn:</strong><br>
+                    <a href="#" class="sidebar-link">https://www.linkedin.com/in/[your-link]</a>
+                </div>
+                <div class="sidebar-text" style="margin-top: 15px;">
+                    <strong>Twitter:</strong><br>
+                    <a href="#" class="sidebar-link">https://twitter.com/[your-handle]</a>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Reference</div>
+                <div class="reference-block">
+                    <p class="ref-name">[REF NAME]</p>
+                    <p class="ref-title">Senior Manager, Leading Corp</p>
+                    <p class="sidebar-text mb-0">T: +1-202-555-0184</p>
+                    <p class="sidebar-text mt-0">E: ref@example.com</p>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Hobbies</div>
+                <ul class="sidebar-list">
+                    <li>Sketching</li>
+                    <li>Photography</li>
+                    <li>Reading</li>
+                    <li>Traveling</li>
+                    <li>Cinema</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RIGHT MAIN AREA -->
+        <div class="main-content">
+            <div class="header">
+                <div class="name-title-container">
+                    <h1 class="name">[YOUR<br>NAME]</h1>
+                    <h2 class="job-title">[YOUR TITLE]</h2>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        [YOUR CITY], [YOUR REGION], [ZIP]
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                        +1-[YOUR PHONE]
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                        [YOUR_EMAIL]@example.com
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-section">
+                <div class="main-title">Work Experience</div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-left">
+                        <div class="timeline-dot"></div>
+                        <p class="org-name">Latest Company</p>
+                        <p class="org-location">New York</p>
+                        <p class="org-date">Jan 2020 - Present</p>
+                    </div>
+                    <div class="timeline-right">
+                        <p class="role-title">Senior Developer</p>
+                        <p class="role-desc">Led technical team to design award-winning campaigns and responsive architectures.</p>
+                        <p class="role-desc">Managed client relationships and pitched new technical business solutions.</p>
+                        <p class="role-desc">Oversaw all creative and technical output from the agency division.</p>
+                        <p class="role-desc">Mentored junior staff and fostered their professional development.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-left">
+                        <div class="timeline-dot"></div>
+                        <p class="org-name">Previous Company</p>
+                        <p class="org-location">New York</p>
+                        <p class="org-date">Jan 2012 - Dec 2019</p>
+                    </div>
+                    <div class="timeline-right">
+                        <p class="role-title">Software Engineer</p>
+                        <p class="role-desc">Designed and executed advertising campaigns for major clients.</p>
+                        <p class="role-desc">Collaborated with copywriters to develop creative technical concepts.</p>
+                        <p class="role-desc">Presented complete products and architectures to clients.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-section">
+                <div class="main-title">Education</div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-left">
+                        <div class="timeline-dot"></div>
+                        <p class="org-name">City College Of New York</p>
+                        <p class="org-location">New York</p>
+                        <p class="org-date">2010 - 2012</p>
+                    </div>
+                    <div class="timeline-right">
+                        <p class="role-title">Master's in Computer Science</p>
+                        <p class="role-desc">Focused on modern software design principles and scalability.</p>
+                        <p class="role-desc">Developed a strong foundation in cloud computing and data structures.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-left">
+                        <div class="timeline-dot"></div>
+                        <p class="org-name">Brooklyn College</p>
+                        <p class="org-location">Brooklyn</p>
+                        <p class="org-date">2006 - 2010</p>
+                    </div>
+                    <div class="timeline-right">
+                        <p class="role-title">Bachelor's in Information Technology</p>
+                        <p class="role-desc">Studied various networking and design techniques.</p>
+                        <p class="role-desc">Gained a strong understanding of computing theories.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-section">
+                <div class="main-title">Skills</div>
+                <div class="skills-grid">
+                    <div class="skill-item">
+                        <div class="skill-label">Development Suite</div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 90%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-label">System Architecture</div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 85%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-label">Database Design</div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 85%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-label">Creative Concepting</div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 75%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-label">Client Relations</div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 80%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-label">Team Leadership</div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 95%;"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-section">
+                <div class="main-title">Languages</div>
+                <div class="skills-grid">
+                    <div class="skill-item">
+                        <div class="skill-label">English</div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-label">Spanish</div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 65%;"></div></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
