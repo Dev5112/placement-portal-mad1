@@ -1,9 +1,12 @@
 from backend import create_app
 from backend.models import db, User
-from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash
 
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 app = create_app()
 

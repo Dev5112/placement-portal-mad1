@@ -5,10 +5,12 @@ from .models import db, User
 
 def create_app():
     app = Flask(__name__, template_folder="../templates", static_folder="../static")
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-        "DATABASE_URL",
-        "sqlite:///PLACEMENT_PORTAL.sqlite3"
-    )
+    
+    db_url = os.getenv("DATABASE_URL", "sqlite:///PLACEMENT_PORTAL.sqlite3")
+    if db_url and db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+        
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "placement_secret_key")
     app.debug = True
